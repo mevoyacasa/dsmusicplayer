@@ -222,22 +222,22 @@ public class LoginActivity extends AppCompatActivity {
     private void showSavedAccountPicker() {
         List<ApiClient.AccountProfile> profiles = apiClient.readAccountProfiles();
         if (profiles.isEmpty()) {
-            toast("\u6682\u65e0\u5df2\u4fdd\u5b58\u8d26\u53f7");
+            toast("暂无已保存账号");
             return;
         }
 
         View view = getLayoutInflater().inflate(R.layout.dialog_account_switch, null, false);
-        ((TextView) view.findViewById(R.id.textAccountSwitchTitle)).setText("\u9009\u62e9\u8d26\u53f7");
+        ((TextView) view.findViewById(R.id.textAccountSwitchTitle)).setText("选择账号");
         TextView subtitle = view.findViewById(R.id.textAccountSwitchSubtitle);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerAccountProfiles);
         TextView buttonLogout = view.findViewById(R.id.buttonAccountSwitchLogout);
         TextView buttonAdd = view.findViewById(R.id.buttonAccountSwitchAdd);
         TextView buttonClose = view.findViewById(R.id.buttonAccountSwitchClose);
 
-        subtitle.setText("\u4e00\u952e\u5957\u7528\u5df2\u4fdd\u5b58\u7684\u767b\u5f55\u914d\u7f6e");
+        subtitle.setText("一键复用已保存的登录配置");
         buttonLogout.setVisibility(View.GONE);
         buttonAdd.setVisibility(View.GONE);
-        buttonClose.setText("\u5173\u95ed");
+        buttonClose.setText("关闭");
 
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this).setView(view).create();
         if (dialog.getWindow() != null) {
@@ -293,9 +293,9 @@ public class LoginActivity extends AppCompatActivity {
             StringBuilder meta = new StringBuilder();
             meta.append(profile.forceHttps ? "HTTPS" : "HTTP");
             meta.append(" \u00b7 ");
-            meta.append(profile.ignoreCert ? "\u5ffd\u7565\u8bc1\u4e66" : "\u9a8c\u8bc1\u8bc1\u4e66");
+            meta.append(profile.ignoreCert ? "忽略证书" : "验证证书");
             if (profile.password != null && !profile.password.isEmpty()) {
-                meta.append(" \u00b7 \u5df2\u8bb0\u4f4f\u5bc6\u7801");
+                meta.append(" · 已记住密码");
             }
             holder.textMeta.setText(meta.toString());
             holder.imageCurrent.setVisibility(View.GONE);

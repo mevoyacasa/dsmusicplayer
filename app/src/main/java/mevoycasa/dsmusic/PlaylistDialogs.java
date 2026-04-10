@@ -54,7 +54,7 @@ final class PlaylistDialogs {
             @Override
             public void onSuccess(List<ApiClient.MediaItemModel> items, boolean hasMore, int total) {
                 List<ApiClient.MediaItemModel> playlists = filterRegularPlaylists(items);
-                showPlaylistPanel("\u6b4c\u5355\u7ba1\u7406", playlists.isEmpty() ? "\u8fd8\u6ca1\u6709\u6b4c\u5355" : "\u70b9\u51fb\u6b4c\u5355\u7ba1\u7406\u6b4c\u66f2", playlists, false, null, null);
+                showPlaylistPanel("歌单管理", playlists.isEmpty() ? "还没有歌单" : "点击歌单管理歌曲", playlists, false, null, null);
             }
 
             @Override
@@ -65,11 +65,11 @@ final class PlaylistDialogs {
     }
 
     void showCreatePlaylist() {
-        promptPlaylistName("\u65b0\u5efa\u6b4c\u5355", "\u8f93\u5165\u6b4c\u5355\u540d\u79f0", "", "\u521b\u5efa", name ->
+        promptPlaylistName("新建歌单", "输入歌单名称", "", "创建", name ->
                 apiClient.createPlaylist(name, new ApiClient.StringCallback() {
                     @Override
                     public void onSuccess(String value) {
-                        toast("\u5df2\u521b\u5efa\u6b4c\u5355");
+                        toast("已创建歌单");
                         showPlaylistManager();
                     }
 
@@ -82,15 +82,15 @@ final class PlaylistDialogs {
 
     void showAccountInfo(String account, String host, int cachedCount, int historyCount) {
         View view = LayoutInflater.from(activity).inflate(R.layout.dialog_account_info, null, false);
-        ((TextView) view.findViewById(R.id.textAccountNameValue)).setText("\u8d26\u53f7\uff1a" + safe(account));
-        ((TextView) view.findViewById(R.id.textAccountHostValue)).setText("\u670d\u52a1\u5668\uff1a" + safe(host));
+        ((TextView) view.findViewById(R.id.textAccountNameValue)).setText("账号：" + safe(account));
+        ((TextView) view.findViewById(R.id.textAccountHostValue)).setText("服务器：" + safe(host));
         boolean hasSid = !TextUtils.isEmpty(apiClient.prefs().getString(ApiClient.KEY_SID, ""));
-        ((TextView) view.findViewById(R.id.textAccountSidValue)).setText("SID\uff1a" + (hasSid ? "\u5df2\u4fdd\u5b58" : "\u7f3a\u5931"));
-        ((TextView) view.findViewById(R.id.textAccountCacheValue)).setText("\u79bb\u7ebf\u7f13\u5b58\uff1a" + cachedCount + " \u9996");
-        ((TextView) view.findViewById(R.id.textAccountHistoryValue)).setText("\u64ad\u653e\u5386\u53f2\uff1a" + historyCount + " \u9996");
+        ((TextView) view.findViewById(R.id.textAccountSidValue)).setText("SID：" + (hasSid ? "已保存" : "缺失"));
+        ((TextView) view.findViewById(R.id.textAccountCacheValue)).setText("离线缓存：" + cachedCount + " 首");
+        ((TextView) view.findViewById(R.id.textAccountHistoryValue)).setText("播放历史：" + historyCount + " 首");
         boolean rememberAccount = apiClient.prefs().getBoolean(ApiClient.KEY_REMEMBER_ACCOUNT, true);
         boolean rememberPassword = apiClient.prefs().getBoolean(ApiClient.KEY_REMEMBER_PASSWORD, true);
-        ((TextView) view.findViewById(R.id.textAccountRememberValue)).setText("\u8bb0\u4f4f\u767b\u5f55\uff1a\u8d26\u53f7 " + (rememberAccount ? "\u5f00" : "\u5173") + " / \u5bc6\u7801 " + (rememberPassword ? "\u5f00" : "\u5173"));
+        ((TextView) view.findViewById(R.id.textAccountRememberValue)).setText("记住登录：账号 " + (rememberAccount ? "开" : "关") + " / 密码 " + (rememberPassword ? "开" : "关"));
 
         AlertDialog dialog = createStyledDialog(view);
         view.findViewById(R.id.buttonAccountClose).setOnClickListener(v -> dialog.dismiss());
@@ -99,7 +99,7 @@ final class PlaylistDialogs {
 
     void showSongPlaylistChooser(ApiClient.MediaItemModel song) {
         if (song == null || TextUtils.isEmpty(song.id)) {
-            toast("\u65e0\u6548\u6b4c\u66f2");
+            toast("无效歌曲");
             return;
         }
         apiClient.fetchPersonalPlaylists(new ApiClient.ArrayCallback() {
@@ -110,7 +110,7 @@ final class PlaylistDialogs {
                     promptCreatePlaylist(song);
                     return;
                 }
-                showPlaylistPanel("\u6dfb\u52a0\u5230\u6b4c\u5355", "\u6b4c\u66f2\uff1a" + safe(song.title), playlists, true, song, null);
+                showPlaylistPanel("添加到歌单", "歌曲：" + safe(song.title), playlists, true, song, null);
             }
 
             @Override
@@ -122,7 +122,7 @@ final class PlaylistDialogs {
 
     void showSongsPlaylistChooser(List<ApiClient.MediaItemModel> songs) {
         if (songs == null || songs.isEmpty()) {
-            toast("\u8bf7\u5148\u9009\u62e9\u6b4c\u66f2");
+            toast("请先选择歌曲");
             return;
         }
         List<String> songIds = collectSongIds(songs);
@@ -134,7 +134,7 @@ final class PlaylistDialogs {
                     showCreatePlaylist();
                     return;
                 }
-                showPlaylistPanel("\u6279\u91cf\u6dfb\u52a0", "\u5df2\u9009\u62e9\uff1a" + songIds.size() + " \u9996", playlists, true, null, songIds);
+                showPlaylistPanel("批量添加", "已选择：" + songIds.size() + " 首", playlists, true, null, songIds);
             }
 
             @Override
@@ -162,8 +162,8 @@ final class PlaylistDialogs {
 
         textTitle.setText(title);
         textSubtitle.setText(subtitle);
-        buttonPrimary.setText("\u65b0\u5efa\u6b4c\u5355");
-        buttonSecondary.setText("\u5173\u95ed");
+        buttonPrimary.setText("新建歌单");
+        buttonSecondary.setText("关闭");
 
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         recyclerView.setVerticalScrollBarEnabled(true);
@@ -185,12 +185,12 @@ final class PlaylistDialogs {
             public void onSuccess(List<ApiClient.MediaItemModel> items, boolean hasMore, int total) {
                 showSongSelectionDialog(
                         playlist.title,
-                        items.isEmpty() ? "\u6b4c\u5355\u4e2d\u6682\u65e0\u6b4c\u66f2" : (items.size() + " \u9996\u6b4c\u66f2"),
+                        items.isEmpty() ? "歌单中暂无歌曲" : (items.size() + " 首歌曲"),
                         items,
-                        "\u8fd4\u56de",
-                        "\u79fb\u9664\u5df2\u9009",
+                        "返回",
+                        "移除已选",
                         selected -> removeSelectedSongsFromPlaylist(playlist, items, selected),
-                        "\u6dfb\u52a0\u6b4c\u66f2",
+                        "添加歌曲",
                         () -> showAddSongsToPlaylistDialog(playlist),
                         () -> showPlaylistManager()
                 );
@@ -208,15 +208,15 @@ final class PlaylistDialogs {
             @Override
             public void onSuccess(List<ApiClient.MediaItemModel> items, boolean hasMore, int total) {
                 if (items.isEmpty()) {
-                    toast("\u6682\u65e0\u53ef\u6dfb\u52a0\u7684\u6b4c\u66f2");
+                    toast("暂无可添加的歌曲");
                     return;
                 }
                 showSongSelectionDialog(
-                        "\u6dfb\u52a0\u5230 " + safe(playlist.title),
-                        "\u9009\u62e9\u6b4c\u66f2\u540e\u786e\u8ba4",
+                        "添加到 " + safe(playlist.title),
+                        "选择歌曲后确认",
                         items,
-                        "\u8fd4\u56de",
-                        "\u6dfb\u52a0\u5df2\u9009",
+                        "返回",
+                        "添加已选",
                         selected -> addSongsToPlaylist(playlist, selected, true),
                         null,
                         null,
@@ -316,7 +316,7 @@ final class PlaylistDialogs {
         buttonConfirm.setOnClickListener(v -> {
             List<String> selected = adapter.getSelectedSongIds();
             if (selected.isEmpty()) {
-                toast("\u8bf7\u81f3\u5c11\u9009\u62e9\u4e00\u9996\u6b4c");
+                toast("请至少选择一首歌");
                 return;
             }
             dialog.dismiss();
@@ -343,7 +343,7 @@ final class PlaylistDialogs {
             return;
         }
         boolean allVisibleSelected = adapter.hasVisibleSongs() && adapter.areAllVisibleSongsSelected();
-        buttonSelectAll.setText(allVisibleSelected ? "\u53d6\u6d88\u5168\u9009" : "\u5168\u9009");
+        buttonSelectAll.setText(allVisibleSelected ? "取消全选" : "全选");
         buttonSelectAll.setBackgroundResource(allVisibleSelected ? R.drawable.bg_button : R.drawable.bg_chip_soft);
         int activeColor = ContextCompat.getColor(activity, android.R.color.white);
         int normalColor = ContextCompat.getColor(activity, R.color.seed);
@@ -359,13 +359,13 @@ final class PlaylistDialogs {
         }
         int removed = currentSongs.size() - remaining.size();
         if (removed <= 0) {
-            toast("\u672a\u9009\u62e9\u6b4c\u66f2");
+            toast("未选择歌曲");
             return;
         }
         apiClient.replacePlaylistSongs(playlist.id, remaining, currentSongs.size(), new ApiClient.StringCallback() {
             @Override
             public void onSuccess(String value) {
-                toast("\u5df2\u79fb\u9664 " + removed + " \u9996\u6b4c");
+                toast("已移除 " + removed + " 首歌");
                 showPlaylistSongsDialog(playlist);
             }
 
@@ -379,7 +379,7 @@ final class PlaylistDialogs {
     private void addSongsToPlaylist(ApiClient.MediaItemModel playlist, List<String> songIds, boolean backToPlaylistSongs) {
         List<String> normalized = normalizeSongIds(songIds);
         if (normalized.isEmpty()) {
-            toast("\u672a\u9009\u62e9\u6b4c\u66f2");
+            toast("未选择歌曲");
             return;
         }
         apiClient.fetchPlaylistSongIds(playlist.id, new ApiClient.StringListCallback() {
@@ -393,7 +393,7 @@ final class PlaylistDialogs {
                     }
                 }
                 if (toAdd.isEmpty()) {
-                    toast("\u6240\u9009\u6b4c\u66f2\u5df2\u5728\u6b4c\u5355\u4e2d");
+                    toast("所选歌曲已在歌单中");
                     if (backToPlaylistSongs) {
                         showPlaylistSongsDialog(playlist);
                     } else {
@@ -404,7 +404,7 @@ final class PlaylistDialogs {
                 apiClient.addSongsToPlaylist(playlist.id, toAdd, new ApiClient.StringCallback() {
                     @Override
                     public void onSuccess(String value) {
-                        toast("\u5df2\u6dfb\u52a0 " + toAdd.size() + " \u9996\u6b4c");
+                        toast("已添加 " + toAdd.size() + " 首歌");
                         if (backToPlaylistSongs) {
                             showPlaylistSongsDialog(playlist);
                         } else {
@@ -427,12 +427,12 @@ final class PlaylistDialogs {
     }
 
     private void promptCreatePlaylist(@Nullable ApiClient.MediaItemModel pendingSong) {
-        promptPlaylistName("\u65b0\u5efa\u6b4c\u5355", "\u8f93\u5165\u6b4c\u5355\u540d\u79f0", "", "\u521b\u5efa", name ->
+        promptPlaylistName("新建歌单", "输入歌单名称", "", "创建", name ->
                 apiClient.createPlaylist(name, new ApiClient.StringCallback() {
                     @Override
                     public void onSuccess(String playlistId) {
                         if (pendingSong == null || TextUtils.isEmpty(pendingSong.id)) {
-                            toast("\u5df2\u521b\u5efa\u6b4c\u5355");
+                            toast("已创建歌单");
                             showPlaylistManager();
                             return;
                         }
@@ -470,7 +470,7 @@ final class PlaylistDialogs {
         buttonConfirm.setOnClickListener(v -> {
             String value = editValue.getText() == null ? "" : editValue.getText().toString().trim();
             if (TextUtils.isEmpty(value)) {
-                toast("\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a");
+                toast("名称不能为空");
                 return;
             }
             dialog.dismiss();
@@ -607,7 +607,7 @@ final class PlaylistDialogs {
         public void onBindViewHolder(@NonNull Holder holder, int position) {
             ApiClient.MediaItemModel playlist = playlists.get(position);
             holder.textTitle.setText(safe(playlist.title));
-            holder.textSubtitle.setText(TextUtils.isEmpty(playlist.subtitle) ? "\u6b4c\u5355" : playlist.subtitle);
+            holder.textSubtitle.setText(TextUtils.isEmpty(playlist.subtitle) ? "歌单" : playlist.subtitle);
 
             if (selectMode) {
                 holder.imageAction.setVisibility(View.GONE);
@@ -659,10 +659,10 @@ final class PlaylistDialogs {
 
     private void showPlaylistActionsMenu(View anchor, ApiClient.MediaItemModel playlist) {
         PopupMenu menu = new PopupMenu(activity, anchor);
-        menu.getMenu().add(0, 1, 0, "\u67e5\u770b\u6b4c\u66f2");
-        menu.getMenu().add(0, 2, 1, "\u6dfb\u52a0\u6b4c\u66f2");
-        menu.getMenu().add(0, 3, 2, "\u91cd\u547d\u540d");
-        menu.getMenu().add(0, 4, 3, "\u5220\u9664");
+        menu.getMenu().add(0, 1, 0, "查看歌曲");
+        menu.getMenu().add(0, 2, 1, "添加歌曲");
+        menu.getMenu().add(0, 3, 2, "重命名");
+        menu.getMenu().add(0, 4, 3, "删除");
         menu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if (id == 1) {
@@ -676,11 +676,11 @@ final class PlaylistDialogs {
                 return true;
             }
             if (id == 3) {
-                promptPlaylistName("\u91cd\u547d\u540d\u6b4c\u5355", "\u8f93\u5165\u65b0\u540d\u79f0", playlist.title, "\u4fdd\u5b58", name ->
+                promptPlaylistName("重命名歌单", "输入新名称", playlist.title, "保存", name ->
                         apiClient.renamePlaylist(playlist.id, name, new ApiClient.StringCallback() {
                             @Override
                             public void onSuccess(String value) {
-                                toast("\u6b4c\u5355\u5df2\u91cd\u547d\u540d");
+                                toast("歌单已重命名");
                                 showPlaylistManager();
                             }
 
@@ -693,14 +693,14 @@ final class PlaylistDialogs {
             }
             if (id == 4) {
                 new AlertDialog.Builder(activity)
-                        .setTitle("\u5220\u9664\u6b4c\u5355")
-                        .setMessage("\u786e\u8ba4\u5220\u9664\u300c" + safe(playlist.title) + "\u300d\u5417\uff1f")
-                        .setNegativeButton("\u53d6\u6d88", null)
-                        .setPositiveButton("\u5220\u9664", (d, which) ->
+                        .setTitle("删除歌单")
+                        .setMessage("确认删除「" + safe(playlist.title) + "」吗？")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("删除", (d, which) ->
                                 apiClient.deletePlaylist(playlist.id, new ApiClient.StringCallback() {
                                     @Override
                                     public void onSuccess(String value) {
-                                        toast("\u6b4c\u5355\u5df2\u5220\u9664");
+                                        toast("歌单已删除");
                                         showPlaylistManager();
                                     }
 

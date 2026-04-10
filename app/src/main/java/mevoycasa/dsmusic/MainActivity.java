@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         lastBackPressedAt = now;
-        toast("\u518d\u6309\u4e00\u6b21\u9000\u51fa\u5230\u684c\u9762");
+        toast("再按一次退出到桌面");
     }
 
     private void bindViews() {
@@ -427,11 +427,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupTabs() {
-        addTab("songs", "\u6b4c\u66f2");
-        addTab("artists", "\u6b4c\u624b");
-        addTab("albums", "\u4e13\u8f91");
-        addTab("playlists", "\u6b4c\u5355");
-        addTab("search", "\u641c\u7d22");
+        addTab("songs", "歌曲");
+        addTab("artists", "歌手");
+        addTab("albums", "专辑");
+        addTab("playlists", "歌单");
+        addTab("search", "搜索");
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -477,10 +477,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupHomeTabs() {
         tabLayout.removeAllTabs();
-        addTab("playlists", "\u6b4c\u5355");
-        addTab("songs", "\u6b4c\u66f2");
-        addTab("artists", "\u6b4c\u624b");
-        addTab("search", "\u641c\u7d22");
+        addTab("playlists", "歌单");
+        addTab("songs", "歌曲");
+        addTab("artists", "歌手");
+        addTab("search", "搜索");
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -677,7 +677,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlayerError(@NonNull PlaybackException error) {
                 Log.e(TAG, "Player error: " + error.getErrorCodeName() + " " + error.getMessage(), error);
-                toast("\u64ad\u653e\u5931\u8d25\uff1a" + error.getMessage());
+                toast("播放失败：" + error.getMessage());
             }
         });
         // Do not start PlaybackService here. Starting it during app bootstrap can delay
@@ -902,7 +902,7 @@ public class MainActivity extends AppCompatActivity {
         apiClient.setConcurrentPlaybackAllowed(allowShared);
         refreshAudioConflictTabs();
         PlaybackService.updateAudioFocusPolicy(this);
-        toast(allowShared ? "\u5df2\u5141\u8bb8\u4e0e\u5176\u4ed6\u5a92\u4f53\u5171\u5b58" : "\u5df2\u5207\u6362\u4e3a\u72ec\u5366\u64ad\u653e");
+        toast(allowShared ? "已允许与其他媒体共存" : "已切换为独占播放");
     }
 
     // Avatar feature removed.
@@ -911,7 +911,7 @@ public class MainActivity extends AppCompatActivity {
         List<ApiClient.AccountProfile> profiles = apiClient.readAccountProfiles();
         if (profiles.isEmpty()) {
             startActivity(new Intent(this, LoginActivity.class));
-            toast("\u6682\u65e0\u5df2\u4fdd\u5b58\u8d26\u53f7\uff0c\u8bf7\u5148\u767b\u5f55");
+            toast("暂无已保存账号，请先登录");
             return;
         }
 
@@ -927,7 +927,7 @@ public class MainActivity extends AppCompatActivity {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        textSubtitle.setText("\u9009\u62e9\u4e00\u4e2a\u5df2\u4fdd\u5b58\u8d26\u53f7\u5feb\u901f\u5207\u6362");
+        textSubtitle.setText("选择一个已保存账号快速切换");
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new AccountProfileAdapter(profiles, profile -> {
             dialog.dismiss();
@@ -985,9 +985,9 @@ public class MainActivity extends AppCompatActivity {
             StringBuilder meta = new StringBuilder();
             meta.append(profile.forceHttps ? "HTTPS" : "HTTP");
             meta.append(" \u00b7 ");
-            meta.append(profile.ignoreCert ? "\u5ffd\u7565\u8bc1\u4e66" : "\u9a8c\u8bc1\u8bc1\u4e66");
+            meta.append(profile.ignoreCert ? "忽略证书" : "验证证书");
             if (!TextUtils.isEmpty(profile.password)) {
-                meta.append(" \u00b7 \u5df2\u8bb0\u4f4f\u5bc6\u7801");
+                meta.append(" · 已记住密码");
             }
             holder.textMeta.setText(meta.toString());
             boolean current = TextUtils.equals(currentHost, profile.host) && TextUtils.equals(currentAccount, profile.account);
@@ -1028,7 +1028,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void switchAccountProfile(ApiClient.AccountProfile profile) {
         if (profile == null || TextUtils.isEmpty(profile.account) || TextUtils.isEmpty(profile.host)) {
-            toast("\u8d26\u53f7\u4fe1\u606f\u4e0d\u5b8c\u6574");
+            toast("账号信息不完整");
             return;
         }
         String normalizedHost = apiClient.normalizeHost(profile.host, profile.forceHttps);
@@ -1052,7 +1052,7 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean(ApiClient.KEY_REMEMBER_PASSWORD, !TextUtils.isEmpty(profile.password))
                 .apply();
 
-        toast("\u6b63\u5728\u5207\u6362\u8d26\u53f7\uff1a" + profile.account);
+        toast("正在切换账号：" + profile.account);
         apiClient.login(normalizedHost, profile.account, profile.password == null ? "" : profile.password, profile.forceHttps, profile.ignoreCert, new ApiClient.JsonCallback() {
             @Override
             public void onSuccess(org.json.JSONObject json) {
@@ -1060,7 +1060,7 @@ public class MainActivity extends AppCompatActivity {
                 browserItems.clear();
                 browserAdapter.notifyDataSetChanged();
                 loadFirstPage(true);
-                toast("\u5df2\u5207\u6362\u5230\uff1a" + profile.account);
+                toast("已切换到：" + profile.account);
             }
 
             @Override
@@ -1094,7 +1094,7 @@ public class MainActivity extends AppCompatActivity {
             currentParentType = "playlist";
             currentSortBy = "title";
             currentSortDirection = "ASC";
-            pendingHeader = TextUtils.isEmpty(savedHeader) ? "\u6b4c\u5355" : savedHeader;
+            pendingHeader = TextUtils.isEmpty(savedHeader) ? "歌单" : savedHeader;
             internalModeSwitch = true;
             if (!selectTabByMode("playlists")) {
                 internalModeSwitch = false;
@@ -1175,18 +1175,18 @@ public class MainActivity extends AppCompatActivity {
 
     private String modeLabel(String mode) {
         if ("playlists".equals(mode)) {
-            return "\u6b4c\u5355";
+            return "歌单";
         }
         if ("artists".equals(mode)) {
-            return "\u6b4c\u624b";
+            return "歌手";
         }
         if ("folders".equals(mode)) {
-            return "\u641c\u7d22";
+            return "搜索";
         }
         if ("search".equals(mode)) {
-            return "\u641c\u7d22";
+            return "搜索";
         }
-        return "\u6b4c\u66f2";
+        return "歌曲";
     }
 
     private void syncPlayerSessionUi() {
@@ -1233,7 +1233,7 @@ public class MainActivity extends AppCompatActivity {
         if (isSongCaching && currentCaching != null) {
             miniPlayer.setVisibility(View.VISIBLE);
             textMiniTitle.setText(currentCaching.title);
-            textMiniSubtitle.setText("\u7f13\u5b58\u4e2d");
+            textMiniSubtitle.setText("缓存中");
             if (!TextUtils.isEmpty(currentCaching.localCoverPath)) {
                 loadLocalCoverInto(new File(currentCaching.localCoverPath), imageMiniCover, false, R.drawable.ic_music_note);
             }
@@ -1244,12 +1244,12 @@ public class MainActivity extends AppCompatActivity {
                 currentCaching = new ApiClient.MediaItemModel();
                 currentCaching.title = PlaybackService.getCurrentTitle();
                 currentCaching.artist = PlaybackService.getCurrentArtist();
-                currentCaching.subtitle = firstNonEmpty(PlaybackService.getCurrentLyricLine(), PlaybackService.getCurrentArtist(), "\u7f13\u5b58\u4e2d");
+                currentCaching.subtitle = firstNonEmpty(PlaybackService.getCurrentLyricLine(), PlaybackService.getCurrentArtist(), "缓存中");
                 currentCaching.localCoverPath = PlaybackService.getCurrentCoverPath();
             }
             miniPlayer.setVisibility(View.VISIBLE);
             textMiniTitle.setText(currentCaching.title);
-            textMiniSubtitle.setText("\u7f13\u5b58\u4e2d " + PlaybackService.getCurrentPercent() + "%");
+            textMiniSubtitle.setText("缓存中 " + PlaybackService.getCurrentPercent() + "%");
             if (!TextUtils.isEmpty(currentCaching.localCoverPath)) {
                 loadLocalCoverInto(new File(currentCaching.localCoverPath), imageMiniCover, false, R.drawable.ic_music_note);
             }
@@ -1368,16 +1368,16 @@ public class MainActivity extends AppCompatActivity {
         if (buttonRefresh instanceof TextView) {
             TextView actionView = (TextView) buttonRefresh;
             if (searchMode && !selectedSearchSongs.isEmpty()) {
-                actionView.setText("\u52a0\u5165\u6b4c\u5355");
+                actionView.setText("添加到歌单");
             } else {
-                actionView.setText("\u5237\u65b0");
+                actionView.setText("刷新");
             }
         }
         if (buttonSelectAll != null) {
             List<ApiClient.MediaItemModel> searchSongs = searchSongItems();
             if (searchMode && !searchSongs.isEmpty()) {
                 buttonSelectAll.setVisibility(View.VISIBLE);
-                buttonSelectAll.setText(selectedSearchSongs.size() == searchSongs.size() ? "\u53d6\u6d88\u5168\u9009" : "\u5168\u9009");
+                buttonSelectAll.setText(selectedSearchSongs.size() == searchSongs.size() ? "取消全选" : "全选");
             } else {
                 buttonSelectAll.setVisibility(View.GONE);
             }
@@ -1897,10 +1897,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         PopupMenu menu = new PopupMenu(this, anchor);
-        menu.getMenu().add(0, 1, 0, "\u4e0b\u4e00\u9996\u64ad\u653e");
-        menu.getMenu().add(0, 2, 1, "\u52a0\u5165\u6b63\u5728\u64ad\u653e\u5217\u8868");
+        menu.getMenu().add(0, 1, 0, "下一首播放");
+        menu.getMenu().add(0, 2, 1, "添加到正在播放列表");
         if ("playlist".equals(currentParentType) && !TextUtils.isEmpty(currentParentId)) {
-            menu.getMenu().add(0, 3, 2, "\u4ece\u5217\u8868\u79fb\u9664");
+            menu.getMenu().add(0, 3, 2, "从列表移除");
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             int action = menuItem.getItemId();
@@ -1926,27 +1926,27 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         String playlistName = currentPlaylistName();
-        String songName = firstNonEmpty(item.title, item.id, "\u6b4c\u66f2");
+        String songName = firstNonEmpty(item.title, item.id, "歌曲");
         apiClient.removeSongFromPlaylist(currentParentId, item.id, new ApiClient.StringCallback() {
             @Override
             public void onSuccess(String value) {
-                toast(songName + "\u4ece" + playlistName + "\u79fb\u9664\u6210\u529f");
+                toast(songName + "从" + playlistName + "移除成功");
                 loadFirstPage(false);
             }
 
             @Override
             public void onError(String message) {
-                toast(songName + "\u4ece" + playlistName + "\u79fb\u9664\u5931\u8d25\uff1a" + message);
+                toast(songName + "从" + playlistName + "移除失败：" + message);
             }
         });
     }
 
     private String currentPlaylistName() {
         if (textHeader == null) {
-            return "\u6b4c\u5355";
+            return "歌单";
         }
         String value = String.valueOf(textHeader.getText());
-        return TextUtils.isEmpty(value) ? "\u6b4c\u5355" : value;
+        return TextUtils.isEmpty(value) ? "歌单" : value;
     }
 
     private void enqueueSongIntoNowPlaying(ApiClient.MediaItemModel item, boolean nextPlay) {
@@ -1963,7 +1963,7 @@ public class MainActivity extends AppCompatActivity {
             playQueue.add(item);
             playQueueIndex = 0;
             playItem(item, playQueue);
-            toast("\u5df2\u52a0\u5165\u6b63\u5728\u64ad\u653e\u5217\u8868");
+            toast("已添加到正在播放列表");
             return;
         }
 
@@ -2004,8 +2004,8 @@ public class MainActivity extends AppCompatActivity {
         syncQueueToService(currentPlaying == null ? null : currentPlaying.id);
 
         toast(nextPlay
-                ? "\u5df2\u8bbe\u7f6e\u4e0b\u4e00\u9996\uff1a" + item.title
-                : "\u5df2\u52a0\u5165\u5230\u6b63\u5728\u64ad\u653e\u5217\u8868\uff1a" + item.title);
+                ? "已设置下一首：" + item.title
+                : "已添加到正在播放列表：" + item.title);
     }
 
     private void beginCachingPlayback(ApiClient.MediaItemModel item) {
@@ -2185,7 +2185,7 @@ public class MainActivity extends AppCompatActivity {
         currentParentType = null;
         currentSortBy = defaultSortBy("playlists");
         currentSortDirection = "ASC";
-        textHeader.setText("\u6b4c\u5355");
+        textHeader.setText("歌单");
         saveHomeState();
         loadFirstPage(false);
         return true;
@@ -2198,7 +2198,7 @@ public class MainActivity extends AppCompatActivity {
         if (folderNavigationStack.isEmpty()) {
             currentParentId = null;
             currentParentType = null;
-            textHeader.setText("\u641c\u7d22");
+            textHeader.setText("搜索");
             loadFirstPage(false);
             return true;
         }
@@ -2392,7 +2392,7 @@ public class MainActivity extends AppCompatActivity {
         if (textPlayerLyricLine == null) {
             return;
         }
-        if (TextUtils.isEmpty(line) || "\u6682\u65e0\u6b4c\u8bcd".equals(line)) {
+        if (TextUtils.isEmpty(line) || "暂无歌词".equals(line)) {
             textPlayerLyricLine.setVisibility(View.GONE);
             return;
         }
@@ -2480,7 +2480,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentNotificationLine() {
         if (currentLyricIndex >= 0 && currentLyricIndex < lyricLines.size()) {
             String primary = lyricLines.get(currentLyricIndex).primary;
-            if (!TextUtils.isEmpty(primary) && !"\u6682\u65e0\u6b4c\u8bcd".equals(primary)) {
+            if (!TextUtils.isEmpty(primary) && !"暂无歌词".equals(primary)) {
                 return primary;
             }
         }
@@ -2658,7 +2658,7 @@ public class MainActivity extends AppCompatActivity {
         miniPlayer.setVisibility(View.VISIBLE);
         textMiniTitle.setText(currentPlaying.title);
         textMiniSubtitle.setText(currentPlaying.subtitle);
-        textPlayerAlbum.setText(firstNonEmpty(currentPlaying.title, currentPlaying.album, "\u5355\u66f2"));
+        textPlayerAlbum.setText(firstNonEmpty(currentPlaying.title, currentPlaying.album, "单曲"));
         textPlayerTitle.setText(currentPlaying.title);
         textPlayerArtist.setText(currentPlaying.subtitle);
         updatePlayerQualityLabel();
@@ -2762,7 +2762,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showCachingProgress(int percent) {
         isSongCaching = true;
-        String progressText = percent >= 100 ? "\u7f13\u5b58\u5b8c\u6210\uff0c\u51c6\u5907\u64ad\u653e" : "\u7f13\u5b58\u4e2d " + percent + "%";
+        String progressText = percent >= 100 ? "缓存完成，准备播放" : "缓存中 " + percent + "%";
         if (currentPlaying != null) {
             textMiniSubtitle.setText(progressText);
             textPlayerArtist.setText(progressText);
@@ -3045,7 +3045,7 @@ public class MainActivity extends AppCompatActivity {
         player.setShuffleModeEnabled(shuffleEnabled);
         updatePlaybackModeUi();
         syncQueueToService(currentPlaying == null ? null : currentPlaying.id);
-        toast(shuffleEnabled ? "\u5df2\u5f00\u542f\u968f\u673a\u64ad\u653e" : "\u5df2\u5173\u95ed\u968f\u673a\u64ad\u653e");
+        toast(shuffleEnabled ? "已开启随机播放" : "已关闭随机播放");
     }
 
     private void toggleRepeatMode() {
@@ -3056,7 +3056,7 @@ public class MainActivity extends AppCompatActivity {
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         updatePlaybackModeUi();
         syncQueueToService(currentPlaying == null ? null : currentPlaying.id);
-        toast(repeatAllEnabled ? "\u5df2\u5f00\u542f\u5217\u8868\u5faa\u73af" : "\u5df2\u5173\u95ed\u5217\u8868\u5faa\u73af");
+        toast(repeatAllEnabled ? "已开启列表循环" : "已关闭列表循环");
     }
 
     private void toggleRepeatOneMode() {
@@ -3067,7 +3067,7 @@ public class MainActivity extends AppCompatActivity {
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         updatePlaybackModeUi();
         syncQueueToService(currentPlaying == null ? null : currentPlaying.id);
-        toast(repeatOneEnabled ? "\u5df2\u5f00\u542f\u5355\u66f2\u5faa\u73af" : "\u5df2\u5173\u95ed\u5355\u66f2\u5faa\u73af");
+        toast(repeatOneEnabled ? "已开启单曲循环" : "已关闭单曲循环");
     }
 
     private void updatePlaybackModeUi() {
@@ -3111,7 +3111,7 @@ public class MainActivity extends AppCompatActivity {
     private void togglePlayPause() {
         if (isSongCaching) {
             stopAllPendingPlayback();
-            toast("\u5df2\u505c\u6b62\u7f13\u5b58\u548c\u5f85\u64ad");
+            toast("已停止缓存和待播");
             return;
         }
         if (currentPlaying == null) {
@@ -3168,7 +3168,7 @@ public class MainActivity extends AppCompatActivity {
                 expandPlayQueueAndThen(() -> continueQueuePlayback(true));
                 return;
             }
-            toast(forward ? "\u5df2\u7ecf\u662f\u6700\u540e\u4e00\u9996" : "\u5df2\u7ecf\u662f\u7b2c\u4e00\u9996");
+            toast(forward ? "已经是最后一首" : "已经是第一首");
             return;
         }
         playQueueIndex = nextIndex;
@@ -3295,7 +3295,7 @@ public class MainActivity extends AppCompatActivity {
             playQueueComplete = !hasMore;
             Runnable notifyReady = () -> {
                 if (!playQueue.isEmpty()) {
-                    toast("\u5df2\u5c06" + currentQueueSourceLabel() + "\u4e2d\u7684" + playQueue.size() + "\u9996\u6b4c\u52a0\u5165\u6b63\u5728\u64ad\u653e\u5217\u8868");
+                    toast("已将" + currentQueueSourceLabel() + "中的" + playQueue.size() + "首歌添加到正在播放列表");
                 }
             };
             if (canExpandPlayQueue()) {
@@ -3325,21 +3325,21 @@ public class MainActivity extends AppCompatActivity {
             return "《" + header + "》" ;
         }
         if ("playlists".equals(currentMode)) {
-            return "\u6b4c\u5355";
+            return "歌单";
         }
         if ("artists".equals(currentMode)) {
-            return "\u6b4c\u624b";
+            return "歌手";
         }
         if ("songs".equals(currentMode)) {
-            return "\u5168\u90e8\u97f3\u4e50";
+            return "所有音乐";
         }
         if ("search".equals(currentMode) && !TextUtils.isEmpty(currentKeyword)) {
-            return "\u641c\u7d22\u7ed3\u679c";
+            return "搜索结果";
         }
         if ("search".equals(currentMode)) {
-            return "\u5f53\u524d\u6587\u4ef6\u5939";
+            return "当前文件夹";
         }
-        return "\u5f53\u524d\u5217\u8868";
+        return "当前列表";
     }
 
     private int findQueueIndexById(String songId) {
@@ -3424,7 +3424,7 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
                         playQueueLoading = false;
-                        toast("\u6269\u5c55\u64ad\u653e\u961f\u5217\u5931\u8d25\uff1a" + message);
+                        toast("扩展播放队列失败：" + message);
                         if (onComplete != null) {
                             onComplete.run();
                         }
@@ -3448,7 +3448,7 @@ public class MainActivity extends AppCompatActivity {
     private void showNowPlayingQueueDialog() {
         ensurePlayableQueue();
         if (playQueue.isEmpty()) {
-            toast("\u6682\u65e0\u6b63\u5728\u64ad\u653e\u7684\u961f\u5217");
+            toast("暂无正在播放的队列");
             return;
         }
 
@@ -3524,7 +3524,7 @@ public class MainActivity extends AppCompatActivity {
         updateQueueSubtitle(textSubtitle);
         buttonAddToPlaylist.setOnClickListener(v -> {
             if (playQueue.isEmpty()) {
-                toast("\u961f\u5217\u4e3a\u7a7a");
+                toast("队列为空");
                 return;
             }
             dialog.dismiss();
@@ -3602,9 +3602,9 @@ public class MainActivity extends AppCompatActivity {
         }
         ApiClient.MediaItemModel song = playQueue.get(position);
         PopupMenu menu = new PopupMenu(this, anchor);
-        menu.getMenu().add(0, 1, 0, "\u63d2\u64ad\u4e0b\u4e00\u9996");
-        menu.getMenu().add(0, 2, 1, "\u6dfb\u52a0\u5230\u6b4c\u5355");
-        menu.getMenu().add(0, 3, 2, "\u4ece\u961f\u5217\u79fb\u9664");
+        menu.getMenu().add(0, 1, 0, "插放下一首");
+        menu.getMenu().add(0, 2, 1, "添加到歌单");
+        menu.getMenu().add(0, 3, 2, "从队列移除");
         menu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if (id == 1) {
@@ -3692,7 +3692,7 @@ public class MainActivity extends AppCompatActivity {
         if (playQueue.isEmpty()) {
             pendingForceNextSongId = null;
             stopAllPendingPlayback();
-            toast("\u64ad\u653e\u961f\u5217\u5df2\u6e05\u7a7a");
+            toast("播放队列已清空");
             return;
         }
         boolean removedCurrent = currentPlaying != null && TextUtils.equals(currentPlaying.id, removed.id);
@@ -3748,12 +3748,12 @@ public class MainActivity extends AppCompatActivity {
                 current = fromId + 1;
             }
         }
-        textSubtitle.setText("\u5171 " + total + " \u9996 \u00B7 \u5f53\u524d\u7b2c " + Math.max(current, 1) + " \u9996");
+        textSubtitle.setText("共 " + total + " 首 · 当前第 " + Math.max(current, 1) + " 首");
     }
 
     private void saveQueueAsNewPlaylist() {
         if (playQueue.isEmpty()) {
-            toast("\u961f\u5217\u4e3a\u7a7a");
+            toast("队列为空");
             return;
         }
         View inputView = LayoutInflater.from(this).inflate(R.layout.dialog_text_input, null, false);
@@ -3763,11 +3763,11 @@ public class MainActivity extends AppCompatActivity {
         TextView buttonCancel = inputView.findViewById(R.id.buttonInputCancel);
         TextView buttonConfirm = inputView.findViewById(R.id.buttonInputConfirm);
 
-        textTitle.setText("\u4fdd\u5b58\u6b63\u5728\u64ad\u653e\u5217\u8868");
-        textSubtitle.setText("\u628a\u5f53\u524d\u961f\u5217\u5b58\u4e3a\u65b0\u6b4c\u5355");
-        editName.setText("\u6211\u7684\u6b63\u5728\u64ad\u653e\u961f\u5217");
+        textTitle.setText("保存正在播放列表");
+        textSubtitle.setText("将当前队列保存为新歌单");
+        editName.setText("我的正在播放队列");
         editName.setSelection(editName.getText() == null ? 0 : editName.getText().length());
-        buttonConfirm.setText("\u4fdd\u5b58");
+        buttonConfirm.setText("保存");
 
         AlertDialog dialog = new AlertDialog.Builder(this).setView(inputView).create();
         if (dialog.getWindow() != null) {
@@ -3778,12 +3778,12 @@ public class MainActivity extends AppCompatActivity {
         buttonConfirm.setOnClickListener(v -> {
             String name = editName.getText() == null ? "" : editName.getText().toString().trim();
             if (TextUtils.isEmpty(name)) {
-                toast("\u6b4c\u5355\u540d\u79f0\u4e0d\u80fd\u4e3a\u7a7a");
+                toast("歌单名称不能为空");
                 return;
             }
             ArrayList<String> songIds = collectQueueSongIds();
             if (songIds.isEmpty()) {
-                toast("\u961f\u5217\u4e2d\u6ca1\u6709\u53ef\u4fdd\u5b58\u6b4c\u66f2");
+                toast("队列中没有可保存歌曲");
                 return;
             }
             apiClient.createPlaylist(name, new ApiClient.StringCallback() {
@@ -3792,7 +3792,7 @@ public class MainActivity extends AppCompatActivity {
                     apiClient.addSongsToPlaylist(playlistId, songIds, new ApiClient.StringCallback() {
                         @Override
                         public void onSuccess(String value) {
-                            toast("\u5df2\u4fdd\u5b58\u4e3a\u65b0\u6b4c\u5355");
+                            toast("已保存为新歌单");
                         }
 
                         @Override
@@ -3864,7 +3864,7 @@ public class MainActivity extends AppCompatActivity {
     private void showOfflineCacheDialog() {
         List<ApiClient.MediaItemModel> cached = collectCachedSongs();
         if (cached.isEmpty()) {
-            toast("\u6682\u65e0\u5df2\u7f13\u5b58\u7684\u97f3\u4e50");
+            toast("暂无已缓存的音乐");
             return;
         }
         String[] entries = new String[cached.size()];
@@ -3872,9 +3872,9 @@ public class MainActivity extends AppCompatActivity {
             entries[i] = cached.get(i).title + " \u00B7 " + cached.get(i).artist;
         }
         new AlertDialog.Builder(this)
-                .setTitle("\u79bb\u7ebf\u5df2\u7f13\u5b58\u97f3\u4e50")
+                .setTitle("离线已缓存音乐")
                 .setItems(entries, (dialog, which) -> playItem(cached.get(which), cached))
-                .setNegativeButton("\u53d6\u6d88", null)
+                .setNegativeButton("取消", null)
                 .show();
     }
 
@@ -3904,10 +3904,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void showSortMenu(View anchor) {
         PopupMenu menu = new PopupMenu(this, anchor);
-        menu.getMenu().add(0, 1, 0, "\u9ed8\u8ba4\u6392\u5e8f A-Z");
-        menu.getMenu().add(0, 2, 1, "\u9ed8\u8ba4\u6392\u5e8f Z-A");
-        menu.getMenu().add(0, 3, 2, "\u6b4c\u624b\u4f18\u5148 A-Z");
-        menu.getMenu().add(0, 4, 3, "\u4e13\u8f91\u4f18\u5148 A-Z");
+        menu.getMenu().add(0, 1, 0, "默认排序 A-Z");
+        menu.getMenu().add(0, 2, 1, "默认排序 Z-A");
+        menu.getMenu().add(0, 3, 2, "歌手优先 A-Z");
+        menu.getMenu().add(0, 4, 3, "专辑优先 A-Z");
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case 1:
@@ -4026,18 +4026,18 @@ public class MainActivity extends AppCompatActivity {
 
     private String typeLabel(ApiClient.MediaItemModel item) {
         if ("artist".equals(item.type)) {
-            return "\u6b4c\u624b";
+            return "歌手";
         }
         if ("album".equals(item.type)) {
-            return "\u4e13\u8f91";
+            return "专辑";
         }
         if ("playlist".equals(item.type)) {
-            return "\u6b4c\u5355";
+            return "歌单";
         }
         if ("folder".equals(item.type)) {
-            return "\u6587\u4ef6\u5939";
+            return "文件夹";
         }
-        return "\u6b4c\u66f2";
+        return "歌曲";
     }
 
     private String metaSuffix(ApiClient.MediaItemModel item) {
