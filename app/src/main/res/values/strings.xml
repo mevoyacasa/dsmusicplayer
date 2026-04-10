@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AS Music</string>
+    <string name="playback_channel_name">后台播放</string>
+</resources>

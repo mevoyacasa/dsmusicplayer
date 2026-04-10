@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardBackgroundColor="#F8F3F1"
+    app:cardCornerRadius="28dp"
+    app:strokeColor="#12FFFFFF"
+    app:strokeWidth="1dp">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_gradient" android:orientation="vertical" android:padding="22dp">
+        <TextView android:id="@+id/textPanelEyebrow" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="你的音乐宇宙" android:textColor="@color/subtle" android:textSize="13sp" />
+        <TextView android:id="@+id/textPanelTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/ink" android:textSize="28sp" android:textStyle="bold" />
+        <TextView android:id="@+id/textPanelSubtitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/subtle" android:textSize="14sp" />
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerPanel" android:layout_width="match_parent" android:layout_height="360dp" android:layout_marginTop="18dp" android:clipToPadding="false" android:paddingBottom="8dp" android:scrollbars="vertical" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="end" android:orientation="horizontal">
+            <TextView android:id="@+id/buttonPanelSecondary" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_chip_soft" android:paddingLeft="16dp" android:paddingTop="10dp" android:paddingRight="16dp" android:paddingBottom="10dp" android:textColor="@color/subtle" android:textSize="14sp" android:textStyle="bold" />
+            <TextView android:id="@+id/buttonPanelPrimary" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10dp" android:background="@drawable/bg_button" android:paddingLeft="18dp" android:paddingTop="10dp" android:paddingRight="18dp" android:paddingBottom="10dp" android:textColor="@android:color/white" android:textSize="14sp" android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardBackgroundColor="#F8F3F1"
+    app:cardCornerRadius="28dp"
+    app:strokeColor="#12FFFFFF"
+    app:strokeWidth="1dp">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_gradient" android:orientation="vertical" android:padding="22dp">
+        <TextView android:id="@+id/textInputTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/ink" android:textSize="26sp" android:textStyle="bold" />
+        <TextView android:id="@+id/textInputSubtitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:textColor="@color/subtle" android:textSize="14sp" />
+        <EditText android:id="@+id/editInputValue" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:background="@drawable/bg_glass_card" android:paddingLeft="16dp" android:paddingTop="14dp" android:paddingRight="16dp" android:paddingBottom="14dp" android:textColor="@color/ink" android:textColorHint="@color/subtle" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:gravity="end" android:orientation="horizontal">
+            <TextView android:id="@+id/buttonInputCancel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_chip_soft" android:paddingLeft="16dp" android:paddingTop="10dp" android:paddingRight="16dp" android:paddingBottom="10dp" android:text="取消" android:textColor="@color/subtle" android:textSize="14sp" android:textStyle="bold" />
+            <TextView android:id="@+id/buttonInputConfirm" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10dp" android:background="@drawable/bg_button" android:paddingLeft="18dp" android:paddingTop="10dp" android:paddingRight="18dp" android:paddingBottom="10dp" android:textColor="@android:color/white" android:textSize="14sp" android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
