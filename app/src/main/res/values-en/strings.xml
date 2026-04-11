@@ -87,8 +87,8 @@
     <string name="add_to_now_playing">Add to now playing list</string>
     <string name="remove_from_list">Remove from list</string>
     <string name="song">Song</string>
-    <string name="removed_from_playlist_success" formatted="false">%s removed from %s successfully</string>
-    <string name="removed_from_playlist_failed" formatted="false">Failed to remove %s from %s: %s</string>
+    <string name="removed_from_playlist_success">%1$s removed from %2$s successfully</string>
+    <string name="removed_from_playlist_failed">Failed to remove %1$s from %2$s: %3$s</string>
     <string name="no_lyrics">No lyrics</string>
     <string name="single">Single</string>
     <string name="shuffle_enabled">Shuffle enabled</string>
@@ -100,9 +100,9 @@
     <string name="stopped_caching">Stopped caching and pending playback</string>
     <string name="already_last_song">Already the last song</string>
     <string name="already_first_song">Already the first song</string>
-    <string name="added_to_now_playing_list_with_count" formatted="false">Added %d songs from %s to now playing list</string>
+    <string name="added_to_now_playing_list_with_count">Added %2$d songs from %1$s to now playing list</string>
     <string name="added_to_now_playing">Added to now playing list</string>
-    <string name="added_to_now_playing_with_title" formatted="false">Added to now playing list: %s</string>
+    <string name="added_to_now_playing_with_title">Added to now playing list: %s</string>
     <string name="app_internal_cache">App Internal Cache</string>
     <string name="all_music">All music</string>
     <string name="search_results">Search results</string>
@@ -224,12 +224,12 @@
     <string name="unknown_artist">Unknown Artist</string>
     <string name="search_songs_artists_playlists_or_folders">Search songs, artists, playlists or folders</string>
     <string name="search_song_title_artist_or_album">Search song title, artist or album</string>
-    <string name="songs_count_label" formatted="false">%d songs</string>
-    <string name="confirm_delete_playlist_formatted" formatted="false">Are you sure you want to delete \"%s\"?</string>
+    <string name="songs_count_label">%d songs</string>
+    <string name="confirm_delete_playlist_formatted">Are you sure you want to delete \"%s\"?</string>
     <string name="sid_saved">Saved</string>
     <string name="sid_missing">Missing</string>
-    <string name="offline_cache_with_count" formatted="false">Offline Cache: %d songs</string>
-    <string name="play_history_with_count" formatted="false">Play History: %d songs</string>
+    <string name="offline_cache_with_count">Offline Cache: %d songs</string>
+    <string name="play_history_with_count">Play History: %d songs</string>
     <string name="unknown_song">Unknown Song</string>
     <string name="unknown_album">Unknown Album</string>
     <string name="server_address_invalid">Invalid server address</string>
@@ -260,12 +260,12 @@
     <string name="error_api_not_found">API not found</string>
     <string name="error_session_timeout">Session expired, please re-login</string>
     <string name="request_failed">Request failed</string>
-    <string name="request_failed_with_code" formatted="false">Request failed, error code %d</string>
+    <string name="request_failed_with_code">Request failed, error code %d</string>
     <string name="song_default">Song</string>
-    <string name="set_next_song" formatted="false">Set as next: %s</string>
+    <string name="set_next_song">Set as next: %s</string>
     <string name="single_track">Single</string>
     <string name="cache_complete_ready_to_play">Cache complete, ready to play</string>
-    <string name="caching_percent" formatted="false">Caching %d%%</string>
+    <string name="caching_percent">Caching %d%%</string>
     <string name="shuffle_on">Shuffle on</string>
     <string name="shuffle_off">Shuffle off</string>
     <string name="repeat_all_on">Repeat all on</string>
@@ -273,8 +273,8 @@
     <string name="repeat_one_on">Repeat one on</string>
     <string name="repeat_one_off">Repeat one off</string>
     <string name="stopped_caching_and_queue">Stopped caching and queue</string>
-    <string name="extend_queue_failed" formatted="false">Failed to extend queue: %s</string>
-    <string name="queue_info" formatted="false">%d total · Song %d of %d</string>
+    <string name="extend_queue_failed">Failed to extend queue: %s</string>
+    <string name="queue_info">%1$d songs · Now playing #%2$d</string>
     <string name="default_sort_a_z">Default Sort A-Z</string>
     <string name="default_sort_z_a">Default Sort Z-A</string>
     <string name="album_first_a_z">Album First A-Z</string>
@@ -293,15 +293,15 @@
     <string name="system_media_control">System Media Control</string>
     <string name="system_media_playback_control">System Media Playback Control</string>
     <string name="please_select_cleanup_rule_first">Please select cleanup rule first</string>
-    <string name="cleaned_count_cache" formatted="false">Cleaned %d caches, current %s</string>
+    <string name="cleaned_count_cache">Cleaned %1$d caches, current %2$s</string>
     <string name="cover_cache">Cover Cache</string>
     <string name="lyrics_cache">Lyrics Cache</string>
     <string name="other_cache">Other Cache</string>
     <string name="custom_cleanup">Custom Cleanup</string>
     <string name="cleanup_description">Only cleans internal cache by default. Won\'t delete downloaded songs.</string>
     <string name="clean">Clean</string>
-    <string name="cleaned_count_only" formatted="false">Cleaned %d internal caches</string>
-    <string name="current_cache_info" formatted="false">Internal cache: %d types · %d items · %s\nCover %s · Lyrics %s · Other %s</string>
+    <string name="cleaned_count_only">Cleaned %d internal caches</string>
+    <string name="current_cache_info">Internal cache: %1$d types · %2$d items · %3$s\nCover %4$s · Lyrics %5$s · Other %6$s</string>
     <string name="sort_by_play_count">Sort by Play Count</string>
     <string name="clear_play_history">Clear Play History</string>
     <string name="clear_history_description">This will clear play count and history, but won\'t delete downloaded songs.</string>

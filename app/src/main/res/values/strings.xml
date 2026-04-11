@@ -87,8 +87,8 @@
     <string name="add_to_now_playing">添加到正在播放列表</string>
     <string name="remove_from_list">从列表移除</string>
     <string name="song">歌曲</string>
-    <string name="removed_from_playlist_success" formatted="false">%s从%s移除成功</string>
-    <string name="removed_from_playlist_failed" formatted="false">%s从%s移除失败：%s</string>
+    <string name="removed_from_playlist_success">%1$s从%2$s移除成功</string>
+    <string name="removed_from_playlist_failed">%1$s从%2$s移除失败：%3$s</string>
     <string name="no_lyrics">暂无歌词</string>
     <string name="single">单曲</string>
     <string name="shuffle_enabled">已开启随机播放</string>
@@ -100,9 +100,9 @@
     <string name="stopped_caching">已停止缓存和待播</string>
     <string name="already_last_song">已经是最后一首</string>
     <string name="already_first_song">已经是第一首</string>
-    <string name="added_to_now_playing_list_with_count" formatted="false">已将%s中的%d首歌添加到正在播放列表</string>
+    <string name="added_to_now_playing_list_with_count">已将%1$s中的%2$d首歌添加到正在播放列表</string>
     <string name="added_to_now_playing">已添加到正在播放列表</string>
-    <string name="added_to_now_playing_with_title" formatted="false">已添加到正在播放列表：%s</string>
+    <string name="added_to_now_playing_with_title">已添加到正在播放列表：%s</string>
     <string name="app_internal_cache">应用内部缓存</string>
     <string name="all_music">所有音乐</string>
     <string name="search_results">搜索结果</string>
@@ -224,12 +224,12 @@
     <string name="unknown_artist">未知歌手</string>
     <string name="search_songs_artists_playlists_or_folders">搜索歌曲、歌手、歌单或文件夹</string>
     <string name="search_song_title_artist_or_album">搜索歌名、歌手或专辑</string>
-    <string name="songs_count_label" formatted="false">%d 首歌曲</string>
-    <string name="confirm_delete_playlist_formatted" formatted="false">确认删除「%s」吗？</string>
+    <string name="songs_count_label">%d 首歌曲</string>
+    <string name="confirm_delete_playlist_formatted">确认删除「%s」吗？</string>
     <string name="sid_saved">已保存</string>
     <string name="sid_missing">缺失</string>
-    <string name="offline_cache_with_count" formatted="false">离线缓存：%d 首</string>
-    <string name="play_history_with_count" formatted="false">播放历史：%d 首</string>
+    <string name="offline_cache_with_count">离线缓存：%d 首</string>
+    <string name="play_history_with_count">播放历史：%d 首</string>
     <string name="unknown_song">未知歌曲</string>
     <string name="unknown_album">未知专辑</string>
     <string name="server_address_invalid">服务器地址无效</string>
@@ -260,12 +260,12 @@
     <string name="error_api_not_found">接口不存在</string>
     <string name="error_session_timeout">会话超时，请重新登录</string>
     <string name="request_failed">请求失败</string>
-    <string name="request_failed_with_code" formatted="false">请求失败，错误码 %d</string>
+    <string name="request_failed_with_code">请求失败，错误码 %d</string>
     <string name="song_default">歌曲</string>
-    <string name="set_next_song" formatted="false">已设置下一首：%s</string>
+    <string name="set_next_song">已设置下一首：%s</string>
     <string name="single_track">单曲</string>
     <string name="cache_complete_ready_to_play">缓存完成，准备播放</string>
-    <string name="caching_percent" formatted="false">缓存中 %d%%</string>
+    <string name="caching_percent">缓存中 %d%%</string>
     <string name="shuffle_on">已开启随机播放</string>
     <string name="shuffle_off">已关闭随机播放</string>
     <string name="repeat_all_on">已开启列表循环</string>
@@ -273,8 +273,8 @@
     <string name="repeat_one_on">已开启单曲循环</string>
     <string name="repeat_one_off">已关闭单曲循环</string>
     <string name="stopped_caching_and_queue">已停止缓存和待播</string>
-    <string name="extend_queue_failed" formatted="false">扩展播放队列失败：%s</string>
-    <string name="queue_info" formatted="false">共 %d 首 · 当前第 %d 首</string>
+    <string name="extend_queue_failed">扩展播放队列失败：%s</string>
+    <string name="queue_info">共 %1$d 首 · 当前第 %2$d 首</string>
     <string name="default_sort_a_z">默认排序 A-Z</string>
     <string name="default_sort_z_a">默认排序 Z-A</string>
     <string name="album_first_a_z">专辑优先 A-Z</string>
@@ -293,15 +293,15 @@
     <string name="system_media_control">系统媒体控制</string>
     <string name="system_media_playback_control">系统媒体播放控制</string>
     <string name="please_select_cleanup_rule_first">请先选择清理规则</string>
-    <string name="cleaned_count_cache" formatted="false">已清理 %d 个内部缓存，当前 %s</string>
+    <string name="cleaned_count_cache">已清理 %1$d 个内部缓存，当前 %2$s</string>
     <string name="cover_cache">封面缓存</string>
     <string name="lyrics_cache">歌词缓存</string>
     <string name="other_cache">其他缓存</string>
     <string name="custom_cleanup">自定义清理</string>
     <string name="cleanup_description">默认只清理内部缓存，不会动已下载歌曲。</string>
     <string name="clean">清理</string>
-    <string name="cleaned_count_only" formatted="false">已清理 %d 个内部缓存</string>
-    <string name="current_cache_info" formatted="false">当前内部缓存 %d 类 · %d 项 · %s\n封面 %s · 歌词 %s · 其他 %s</string>
+    <string name="cleaned_count_only">已清理 %d 个内部缓存</string>
+    <string name="current_cache_info">当前内部缓存 %1$d 类 · %2$d 项 · %3$s\n封面 %4$s · 歌词 %5$s · 其他 %6$s</string>
     <string name="sort_by_play_count">按播放频率排序</string>
     <string name="clear_play_history">清除播放记录</string>
     <string name="clear_history_description">这会清空播放次数与播放历史，但不会删除已下载歌曲。</string>
