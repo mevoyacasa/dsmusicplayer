@@ -54,7 +54,10 @@ final class PlaylistDialogs {
             @Override
             public void onSuccess(List<ApiClient.MediaItemModel> items, boolean hasMore, int total) {
                 List<ApiClient.MediaItemModel> playlists = filterRegularPlaylists(items);
-                showPlaylistPanel("歌单管理", playlists.isEmpty() ? "还没有歌单" : "点击歌单管理歌曲", playlists, false, null, null);
+                showPlaylistPanel(
+                        activity.getString(R.string.playlist_management),
+                        playlists.isEmpty() ? activity.getString(R.string.no_playlists_yet) : activity.getString(R.string.click_playlist_to_manage_songs),
+                        playlists, false, null, null);
             }
 
             @Override
@@ -65,11 +68,14 @@ final class PlaylistDialogs {
     }
 
     void showCreatePlaylist() {
-        promptPlaylistName("新建歌单", "输入歌单名称", "", "创建", name ->
+        promptPlaylistName(
+                activity.getString(R.string.create_new_playlist),
+                activity.getString(R.string.input_playlist_name), "",
+                activity.getString(R.string.create), name ->
                 apiClient.createPlaylist(name, new ApiClient.StringCallback() {
                     @Override
                     public void onSuccess(String value) {
-                        toast("已创建歌单");
+                        toast(activity.getString(R.string.playlist_created));
                         showPlaylistManager();
                     }
 
@@ -82,15 +88,19 @@ final class PlaylistDialogs {
 
     void showAccountInfo(String account, String host, int cachedCount, int historyCount) {
         View view = LayoutInflater.from(activity).inflate(R.layout.dialog_account_info, null, false);
-        ((TextView) view.findViewById(R.id.textAccountNameValue)).setText("账号：" + safe(account));
-        ((TextView) view.findViewById(R.id.textAccountHostValue)).setText("服务器：" + safe(host));
+        ((TextView) view.findViewById(R.id.textAccountNameValue)).setText(activity.getString(R.string.account_colon) + safe(account));
+        ((TextView) view.findViewById(R.id.textAccountHostValue)).setText(activity.getString(R.string.server_colon) + safe(host));
         boolean hasSid = !TextUtils.isEmpty(apiClient.prefs().getString(ApiClient.KEY_SID, ""));
-        ((TextView) view.findViewById(R.id.textAccountSidValue)).setText("SID：" + (hasSid ? "已保存" : "缺失"));
-        ((TextView) view.findViewById(R.id.textAccountCacheValue)).setText("离线缓存：" + cachedCount + " 首");
-        ((TextView) view.findViewById(R.id.textAccountHistoryValue)).setText("播放历史：" + historyCount + " 首");
+        ((TextView) view.findViewById(R.id.textAccountSidValue)).setText("SID：" + (hasSid ? activity.getString(R.string.sid_saved) : activity.getString(R.string.sid_missing)));
+        ((TextView) view.findViewById(R.id.textAccountCacheValue)).setText(activity.getString(R.string.offline_cache_with_count, cachedCount));
+        ((TextView) view.findViewById(R.id.textAccountHistoryValue)).setText(activity.getString(R.string.play_history_with_count, historyCount));
         boolean rememberAccount = apiClient.prefs().getBoolean(ApiClient.KEY_REMEMBER_ACCOUNT, true);
         boolean rememberPassword = apiClient.prefs().getBoolean(ApiClient.KEY_REMEMBER_PASSWORD, true);
-        ((TextView) view.findViewById(R.id.textAccountRememberValue)).setText("记住登录：账号 " + (rememberAccount ? "开" : "关") + " / 密码 " + (rememberPassword ? "开" : "关"));
+        ((TextView) view.findViewById(R.id.textAccountRememberValue)).setText(
+                activity.getString(R.string.remember_login)
+                        + (rememberAccount ? activity.getString(R.string.on) : activity.getString(R.string.off))
+                        + activity.getString(R.string.slash_password)
+                        + (rememberPassword ? activity.getString(R.string.on) : activity.getString(R.string.off)));
 
         AlertDialog dialog = createStyledDialog(view);
         view.findViewById(R.id.buttonAccountClose).setOnClickListener(v -> dialog.dismiss());
@@ -99,7 +109,7 @@ final class PlaylistDialogs {
 
     void showSongPlaylistChooser(ApiClient.MediaItemModel song) {
         if (song == null || TextUtils.isEmpty(song.id)) {
-            toast("无效歌曲");
+            toast(activity.getString(R.string.invalid_song));
             return;
         }
         apiClient.fetchPersonalPlaylists(new ApiClient.ArrayCallback() {
@@ -110,7 +120,7 @@ final class PlaylistDialogs {
                     promptCreatePlaylist(song);
                     return;
                 }
-                showPlaylistPanel("添加到歌单", "歌曲：" + safe(song.title), playlists, true, song, null);
+                showPlaylistPanel(activity.getString(R.string.add_to_playlist), activity.getString(R.string.song_colon) + safe(song.title), playlists, true, song, null);
             }
 
             @Override
@@ -122,7 +132,7 @@ final class PlaylistDialogs {
 
     void showSongsPlaylistChooser(List<ApiClient.MediaItemModel> songs) {
         if (songs == null || songs.isEmpty()) {
-            toast("请先选择歌曲");
+            toast(activity.getString(R.string.please_select_songs_first));
             return;
         }
         List<String> songIds = collectSongIds(songs);
@@ -134,7 +144,10 @@ final class PlaylistDialogs {
                     showCreatePlaylist();
                     return;
                 }
-                showPlaylistPanel("批量添加", "已选择：" + songIds.size() + " 首", playlists, true, null, songIds);
+                showPlaylistPanel(
+                        activity.getString(R.string.batch_add),
+                        activity.getString(R.string.selected_colon) + songIds.size() + activity.getString(R.string.songs_count),
+                        playlists, true, null, songIds);
             }
 
             @Override
@@ -162,8 +175,8 @@ final class PlaylistDialogs {
 
         textTitle.setText(title);
         textSubtitle.setText(subtitle);
-        buttonPrimary.setText("新建歌单");
-        buttonSecondary.setText("关闭");
+        buttonPrimary.setText(activity.getString(R.string.create_new_playlist));
+        buttonSecondary.setText(activity.getString(R.string.close));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         recyclerView.setVerticalScrollBarEnabled(true);
@@ -185,12 +198,12 @@ final class PlaylistDialogs {
             public void onSuccess(List<ApiClient.MediaItemModel> items, boolean hasMore, int total) {
                 showSongSelectionDialog(
                         playlist.title,
-                        items.isEmpty() ? "歌单中暂无歌曲" : (items.size() + " 首歌曲"),
+                        items.isEmpty() ? activity.getString(R.string.no_songs_in_playlist) : activity.getString(R.string.songs_count_label, items.size()),
                         items,
-                        "返回",
-                        "移除已选",
+                        activity.getString(R.string.button_back),
+                        activity.getString(R.string.remove_selected),
                         selected -> removeSelectedSongsFromPlaylist(playlist, items, selected),
-                        "添加歌曲",
+                        activity.getString(R.string.add_songs),
                         () -> showAddSongsToPlaylistDialog(playlist),
                         () -> showPlaylistManager()
                 );
@@ -208,15 +221,15 @@ final class PlaylistDialogs {
             @Override
             public void onSuccess(List<ApiClient.MediaItemModel> items, boolean hasMore, int total) {
                 if (items.isEmpty()) {
-                    toast("暂无可添加的歌曲");
+                    toast(activity.getString(R.string.no_songs_to_add));
                     return;
                 }
                 showSongSelectionDialog(
-                        "添加到 " + safe(playlist.title),
-                        "选择歌曲后确认",
+                        activity.getString(R.string.add_to) + safe(playlist.title),
+                        activity.getString(R.string.select_songs_and_confirm),
                         items,
-                        "返回",
-                        "添加已选",
+                        activity.getString(R.string.button_back),
+                        activity.getString(R.string.add_selected),
                         selected -> addSongsToPlaylist(playlist, selected, true),
                         null,
                         null,
@@ -316,7 +329,7 @@ final class PlaylistDialogs {
         buttonConfirm.setOnClickListener(v -> {
             List<String> selected = adapter.getSelectedSongIds();
             if (selected.isEmpty()) {
-                toast("请至少选择一首歌");
+                toast(activity.getString(R.string.please_select_at_least_one_song));
                 return;
             }
             dialog.dismiss();
@@ -343,7 +356,7 @@ final class PlaylistDialogs {
             return;
         }
         boolean allVisibleSelected = adapter.hasVisibleSongs() && adapter.areAllVisibleSongsSelected();
-        buttonSelectAll.setText(allVisibleSelected ? "取消全选" : "全选");
+        buttonSelectAll.setText(allVisibleSelected ? activity.getString(R.string.deselect_all) : activity.getString(R.string.select_all));
         buttonSelectAll.setBackgroundResource(allVisibleSelected ? R.drawable.bg_button : R.drawable.bg_chip_soft);
         int activeColor = ContextCompat.getColor(activity, android.R.color.white);
         int normalColor = ContextCompat.getColor(activity, R.color.seed);
@@ -359,13 +372,13 @@ final class PlaylistDialogs {
         }
         int removed = currentSongs.size() - remaining.size();
         if (removed <= 0) {
-            toast("未选择歌曲");
+            toast(activity.getString(R.string.no_songs_selected));
             return;
         }
         apiClient.replacePlaylistSongs(playlist.id, remaining, currentSongs.size(), new ApiClient.StringCallback() {
             @Override
             public void onSuccess(String value) {
-                toast("已移除 " + removed + " 首歌");
+                toast(activity.getString(R.string.removed_count_songs, removed));
                 showPlaylistSongsDialog(playlist);
             }
 
@@ -379,7 +392,7 @@ final class PlaylistDialogs {
     private void addSongsToPlaylist(ApiClient.MediaItemModel playlist, List<String> songIds, boolean backToPlaylistSongs) {
         List<String> normalized = normalizeSongIds(songIds);
         if (normalized.isEmpty()) {
-            toast("未选择歌曲");
+            toast(activity.getString(R.string.no_songs_selected));
             return;
         }
         apiClient.fetchPlaylistSongIds(playlist.id, new ApiClient.StringListCallback() {
@@ -393,7 +406,7 @@ final class PlaylistDialogs {
                     }
                 }
                 if (toAdd.isEmpty()) {
-                    toast("所选歌曲已在歌单中");
+                    toast(activity.getString(R.string.songs_already_in_playlist));
                     if (backToPlaylistSongs) {
                         showPlaylistSongsDialog(playlist);
                     } else {
@@ -404,7 +417,7 @@ final class PlaylistDialogs {
                 apiClient.addSongsToPlaylist(playlist.id, toAdd, new ApiClient.StringCallback() {
                     @Override
                     public void onSuccess(String value) {
-                        toast("已添加 " + toAdd.size() + " 首歌");
+                        toast(activity.getString(R.string.added_count_songs, toAdd.size()));
                         if (backToPlaylistSongs) {
                             showPlaylistSongsDialog(playlist);
                         } else {
@@ -427,12 +440,15 @@ final class PlaylistDialogs {
     }
 
     private void promptCreatePlaylist(@Nullable ApiClient.MediaItemModel pendingSong) {
-        promptPlaylistName("新建歌单", "输入歌单名称", "", "创建", name ->
+        promptPlaylistName(
+                activity.getString(R.string.create_new_playlist),
+                activity.getString(R.string.input_playlist_name), "",
+                activity.getString(R.string.create), name ->
                 apiClient.createPlaylist(name, new ApiClient.StringCallback() {
                     @Override
                     public void onSuccess(String playlistId) {
                         if (pendingSong == null || TextUtils.isEmpty(pendingSong.id)) {
-                            toast("已创建歌单");
+                            toast(activity.getString(R.string.playlist_created));
                             showPlaylistManager();
                             return;
                         }
@@ -470,7 +486,7 @@ final class PlaylistDialogs {
         buttonConfirm.setOnClickListener(v -> {
             String value = editValue.getText() == null ? "" : editValue.getText().toString().trim();
             if (TextUtils.isEmpty(value)) {
-                toast("名称不能为空");
+                toast(activity.getString(R.string.name_cannot_be_empty));
                 return;
             }
             dialog.dismiss();
@@ -480,7 +496,6 @@ final class PlaylistDialogs {
     }
 
     private void enableEdgeFastScroll(RecyclerView recyclerView) {
-        // Keep the same quick-scroll gesture width as the home list for consistency.
         final float edgeWidthPx = activity.getResources().getDisplayMetrics().density * 56f;
         recyclerView.setOnTouchListener((v, event) -> {
             RecyclerView.Adapter<?> adapter = recyclerView.getAdapter();
@@ -607,7 +622,7 @@ final class PlaylistDialogs {
         public void onBindViewHolder(@NonNull Holder holder, int position) {
             ApiClient.MediaItemModel playlist = playlists.get(position);
             holder.textTitle.setText(safe(playlist.title));
-            holder.textSubtitle.setText(TextUtils.isEmpty(playlist.subtitle) ? "歌单" : playlist.subtitle);
+            holder.textSubtitle.setText(TextUtils.isEmpty(playlist.subtitle) ? activity.getString(R.string.playlist) : playlist.subtitle);
 
             if (selectMode) {
                 holder.imageAction.setVisibility(View.GONE);
@@ -659,10 +674,10 @@ final class PlaylistDialogs {
 
     private void showPlaylistActionsMenu(View anchor, ApiClient.MediaItemModel playlist) {
         PopupMenu menu = new PopupMenu(activity, anchor);
-        menu.getMenu().add(0, 1, 0, "查看歌曲");
-        menu.getMenu().add(0, 2, 1, "添加歌曲");
-        menu.getMenu().add(0, 3, 2, "重命名");
-        menu.getMenu().add(0, 4, 3, "删除");
+        menu.getMenu().add(0, 1, 0, activity.getString(R.string.view_songs));
+        menu.getMenu().add(0, 2, 1, activity.getString(R.string.add_songs));
+        menu.getMenu().add(0, 3, 2, activity.getString(R.string.rename));
+        menu.getMenu().add(0, 4, 3, activity.getString(R.string.delete));
         menu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if (id == 1) {
@@ -676,11 +691,14 @@ final class PlaylistDialogs {
                 return true;
             }
             if (id == 3) {
-                promptPlaylistName("重命名歌单", "输入新名称", playlist.title, "保存", name ->
+                promptPlaylistName(
+                        activity.getString(R.string.rename_playlist),
+                        activity.getString(R.string.enter_new_name), playlist.title,
+                        activity.getString(R.string.save), name ->
                         apiClient.renamePlaylist(playlist.id, name, new ApiClient.StringCallback() {
                             @Override
                             public void onSuccess(String value) {
-                                toast("歌单已重命名");
+                                toast(activity.getString(R.string.playlist_renamed));
                                 showPlaylistManager();
                             }
 
@@ -693,14 +711,14 @@ final class PlaylistDialogs {
             }
             if (id == 4) {
                 new AlertDialog.Builder(activity)
-                        .setTitle("删除歌单")
-                        .setMessage("确认删除「" + safe(playlist.title) + "」吗？")
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("删除", (d, which) ->
+                        .setTitle(activity.getString(R.string.delete_playlist))
+                        .setMessage(activity.getString(R.string.confirm_delete_playlist_formatted, safe(playlist.title)))
+                        .setNegativeButton(activity.getString(R.string.button_cancel), null)
+                        .setPositiveButton(activity.getString(R.string.delete), (d, which) ->
                                 apiClient.deletePlaylist(playlist.id, new ApiClient.StringCallback() {
                                     @Override
                                     public void onSuccess(String value) {
-                                        toast("歌单已删除");
+                                        toast(activity.getString(R.string.playlist_deleted));
                                         showPlaylistManager();
                                     }
 

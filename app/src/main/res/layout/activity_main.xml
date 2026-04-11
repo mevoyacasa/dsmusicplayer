@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
@@ -47,7 +47,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:text="你的音乐宇宙"
+                        android:text="@string/your_music_universe"
                         android:textColor="@color/subtle"
                         android:textSize="13sp" />
 
@@ -58,7 +58,7 @@
                         android:layout_marginTop="4dp"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:text="歌单"
+                        android:text="@string/playlists"
                         android:textColor="@color/ink"
                         android:textSize="28sp"
                         android:textStyle="bold" />
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
-                    android:hint="搜索歌曲、歌手、歌单或文件夹"
+                    android:hint="@string/search_songs_artists_playlists_or_folders"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:paddingLeft="12dp"
@@ -148,7 +148,7 @@
                     android:paddingTop="9dp"
                     android:paddingRight="14dp"
                     android:paddingBottom="9dp"
-                    android:text="排序"
+                    android:text="@string/sort"
                     android:textColor="@color/seed"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -163,7 +163,7 @@
                     android:paddingTop="9dp"
                     android:paddingRight="14dp"
                     android:paddingBottom="9dp"
-                    android:text="刷新"
+                    android:text="@string/refresh"
                     android:textColor="@color/seed"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -178,7 +178,7 @@
                     android:paddingTop="9dp"
                     android:paddingRight="14dp"
                     android:paddingBottom="9dp"
-                    android:text="随机"
+                    android:text="@string/random"
                     android:textColor="@color/seed"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -193,7 +193,7 @@
                     android:paddingTop="9dp"
                     android:paddingRight="14dp"
                     android:paddingBottom="9dp"
-                    android:text="搜索"
+                    android:text="@string/search"
                     android:textColor="@color/seed"
                     android:textSize="13sp"
                     android:textStyle="bold"
@@ -209,7 +209,7 @@
                     android:paddingTop="9dp"
                     android:paddingRight="14dp"
                     android:paddingBottom="9dp"
-                    android:text="全选"
+                    android:text="@string/select_all"
                     android:textColor="@color/seed"
                     android:textSize="13sp"
                     android:textStyle="bold"
@@ -246,7 +246,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="这里暂时还没有内容"
+                        android:text="@string/no_content_here_yet"
                         android:textColor="@color/subtle"
                         android:textSize="15sp"
                         android:visibility="gone" />
@@ -418,7 +418,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="正在播放"
+                        android:text="@string/now_playing"
                         android:textColor="#B3FFFFFF"
                         android:textSize="12sp" />
 
@@ -649,7 +649,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="歌词"
+                            android:text="@string/lyrics"
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -683,7 +683,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="音乐账户"
+            android:text="@string/music_account"
             android:textColor="@color/subtle"
             android:textSize="13sp" />
 
@@ -720,7 +720,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            android:text="功能"
+            android:text="@string/features"
             android:textColor="@color/subtle"
             android:textSize="13sp" />
 
@@ -731,7 +731,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_glass_card"
             android:padding="16dp"
-            android:text="设置"
+            android:text="@string/settings"
             android:textColor="@color/ink"
             android:textSize="16sp" />
 
@@ -742,7 +742,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_glass_card"
             android:padding="16dp"
-            android:text="已下载歌曲"
+            android:text="@string/downloaded_songs"
             android:textColor="@color/ink"
             android:textSize="16sp" />
 
@@ -753,7 +753,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_glass_card"
             android:padding="16dp"
-            android:text="歌单管理"
+            android:text="@string/playlist_management"
             android:textColor="@color/ink"
             android:textSize="16sp"
             android:visibility="gone" />
@@ -765,7 +765,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_glass_card"
             android:padding="16dp"
-            android:text="缓存管理"
+            android:text="@string/cache_management"
             android:textColor="@color/ink"
             android:textSize="16sp"
             android:visibility="gone" />
@@ -783,7 +783,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="与其他媒体共存"
+                android:text="@string/coexist_with_other_media"
                 android:textColor="@color/ink"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -801,7 +801,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/bg_tab_selected_pill"
                     android:gravity="center"
-                    android:text="独占播放"
+                    android:text="@string/exclusive_playback"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
 
@@ -813,7 +813,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/bg_chip_soft"
                     android:gravity="center"
-                    android:text="共享播放"
+                    android:text="@string/shared_playback"
                     android:textColor="@color/subtle"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -831,7 +831,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_glass_card"
             android:padding="16dp"
-            android:text="关于"
+            android:text="@string/about"
             android:textColor="@color/ink"
             android:textSize="16sp" />
 
@@ -842,7 +842,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_glass_card"
             android:padding="16dp"
-            android:text="退出"
+            android:text="@string/exit"
             android:textColor="@color/ink"
             android:textSize="16sp" />
     </LinearLayout>

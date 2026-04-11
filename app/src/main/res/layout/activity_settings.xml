@@ -22,7 +22,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="设置"
+                android:text="@string/settings_title"
                 android:textColor="@color/ink"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -38,7 +38,7 @@
                 android:maxLines="1"
                 android:paddingLeft="14dp"
                 android:paddingRight="14dp"
-                android:text="返回"
+                android:text="@string/button_back"
                 android:textColor="@color/subtle"
                 android:textSize="13sp" />
         </LinearLayout>
@@ -72,7 +72,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="本地缓存"
+                        android:text="@string/local_cache"
                         android:textColor="@color/ink"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -88,7 +88,7 @@
                         android:maxLines="1"
                         android:paddingLeft="14dp"
                         android:paddingRight="14dp"
-                        android:text="选择"
+                        android:text="@string/button_select"
                         android:textColor="@color/subtle"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -108,7 +108,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="歌词偏移"
+                        android:text="@string/lyric_offset"
                         android:textColor="@color/ink"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -124,7 +124,7 @@
                         android:maxLines="1"
                         android:paddingLeft="14dp"
                         android:paddingRight="14dp"
-                        android:text="标准"
+                        android:text="@string/standard"
                         android:textColor="@color/subtle"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -144,7 +144,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="账号"
+                        android:text="@string/account"
                         android:textColor="@color/ink"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -160,7 +160,7 @@
                         android:maxLines="1"
                         android:paddingLeft="14dp"
                         android:paddingRight="14dp"
-                        android:text="切换"
+                        android:text="@string/button_switch"
                         android:textColor="@color/subtle"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -180,7 +180,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="歌单"
+                        android:text="@string/playlist"
                         android:textColor="@color/ink"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -196,7 +196,7 @@
                         android:maxLines="1"
                         android:paddingLeft="14dp"
                         android:paddingRight="14dp"
-                        android:text="管理"
+                        android:text="@string/button_manage"
                         android:textColor="@color/subtle"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -216,7 +216,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="缓存"
+                        android:text="@string/cache"
                         android:textColor="@color/ink"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -232,7 +232,7 @@
                         android:maxLines="1"
                         android:paddingLeft="14dp"
                         android:paddingRight="14dp"
-                        android:text="管理"
+                        android:text="@string/button_manage"
                         android:textColor="@color/subtle"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -252,7 +252,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="共存"
+                        android:text="@string/coexistence"
                         android:textColor="@color/ink"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -273,7 +273,7 @@
                             android:maxLines="1"
                             android:paddingLeft="12dp"
                             android:paddingRight="12dp"
-                            android:text="独占"
+                            android:text="@string/exclusive"
                             android:textColor="@color/subtle"
                             android:textSize="13sp" />
 
@@ -289,7 +289,65 @@
                             android:maxLines="1"
                             android:paddingLeft="12dp"
                             android:paddingRight="12dp"
-                            android:text="共享"
+                            android:text="@string/shared"
+                            android:textColor="@color/subtle"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/tab_border" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/language"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/buttonLanguageChinese"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:background="@drawable/bg_chip_soft"
+                            android:gravity="center"
+                            android:minWidth="64dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:paddingLeft="12dp"
+                            android:paddingRight="12dp"
+                            android:text="@string/chinese"
+                            android:textColor="@color/subtle"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/buttonLanguageEnglish"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginLeft="8dp"
+                            android:background="@drawable/bg_chip_soft"
+                            android:gravity="center"
+                            android:minWidth="64dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:paddingLeft="12dp"
+                            android:paddingRight="12dp"
+                            android:text="@string/english"
                             android:textColor="@color/subtle"
                             android:textSize="13sp" />
                     </LinearLayout>

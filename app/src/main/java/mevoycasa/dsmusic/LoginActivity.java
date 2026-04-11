@@ -1,5 +1,7 @@
 package mevoycasa.dsmusic;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,6 +49,14 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        // 设置应用语言
+        String language = new ApiClient(this).getAppLanguage();
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+        android.content.res.Configuration config = new android.content.res.Configuration();
+        config.locale = locale;
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -108,15 +118,15 @@ public class LoginActivity extends AppCompatActivity {
         boolean ignoreCert = checkIgnoreCert.isChecked();
 
         if (TextUtils.isEmpty(host)) {
-            toast("请输入服务器地址");
+            toast(getString(R.string.please_enter_server_address));
             return;
         }
         if (TextUtils.isEmpty(account)) {
-            toast("请输入账号");
+            toast(getString(R.string.please_enter_account));
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            toast("请输入密码");
+            toast(getString(R.string.please_enter_password));
             return;
         }
 
@@ -129,11 +139,11 @@ public class LoginActivity extends AppCompatActivity {
                 .putString(ApiClient.KEY_PASSWORD, rememberPassword ? password : "")
                 .apply();
 
-        setLoading(true, "正在登录并保存 sid...");
+        setLoading(true, getString(R.string.logging_in_and_saving_sid));
         apiClient.login(host, account, password, forceHttps, ignoreCert, new ApiClient.JsonCallback() {
             @Override
             public void onSuccess(JSONObject json) {
-                setLoading(false, "登录成功，sid 已保存。");
+                setLoading(false, getString(R.string.login_success_sid_saved));
                 finishLoginFlow();
             }
 
@@ -165,15 +175,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showCacheLocationDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("设置缓存目录")
-                .setMessage("歌曲文件可以放在内部缓存或外部目录，歌词和封面始终保留在内部。")
-                .setPositiveButton("使用内部", (dialog, which) -> {
+                .setTitle(getString(R.string.set_cache_directory))
+                .setMessage(getString(R.string.cache_dir_description))
+                .setPositiveButton(getString(R.string.use_internal), (dialog, which) -> {
                     apiClient.setSongCacheTreeUri(null);
                     markCacheLocationPromptDone();
                     openMain();
                 })
-                .setNeutralButton("选择外部", (dialog, which) -> launchPickCacheLocation())
-                .setNegativeButton("取消", (dialog, which) -> {
+                .setNeutralButton(getString(R.string.select_external), (dialog, which) -> launchPickCacheLocation())
+                .setNegativeButton(getString(R.string.close), (dialog, which) -> {
                     apiClient.setSongCacheTreeUri(null);
                     markCacheLocationPromptDone();
                     openMain();
@@ -222,22 +232,22 @@ public class LoginActivity extends AppCompatActivity {
     private void showSavedAccountPicker() {
         List<ApiClient.AccountProfile> profiles = apiClient.readAccountProfiles();
         if (profiles.isEmpty()) {
-            toast("暂无已保存账号");
+            toast(getString(R.string.no_saved_account));
             return;
         }
 
         View view = getLayoutInflater().inflate(R.layout.dialog_account_switch, null, false);
-        ((TextView) view.findViewById(R.id.textAccountSwitchTitle)).setText("选择账号");
+        ((TextView) view.findViewById(R.id.textAccountSwitchTitle)).setText(getString(R.string.select_account));
         TextView subtitle = view.findViewById(R.id.textAccountSwitchSubtitle);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerAccountProfiles);
         TextView buttonLogout = view.findViewById(R.id.buttonAccountSwitchLogout);
         TextView buttonAdd = view.findViewById(R.id.buttonAccountSwitchAdd);
         TextView buttonClose = view.findViewById(R.id.buttonAccountSwitchClose);
 
-        subtitle.setText("一键复用已保存的登录配置");
+        subtitle.setText(getString(R.string.reuse_saved_config));
         buttonLogout.setVisibility(View.GONE);
         buttonAdd.setVisibility(View.GONE);
-        buttonClose.setText("关闭");
+        buttonClose.setText(getString(R.string.close));
 
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this).setView(view).create();
         if (dialog.getWindow() != null) {
@@ -293,9 +303,9 @@ public class LoginActivity extends AppCompatActivity {
             StringBuilder meta = new StringBuilder();
             meta.append(profile.forceHttps ? "HTTPS" : "HTTP");
             meta.append(" \u00b7 ");
-            meta.append(profile.ignoreCert ? "忽略证书" : "验证证书");
+            meta.append(profile.ignoreCert ? getString(R.string.ignore_certificate) : getString(R.string.verify_certificate));
             if (profile.password != null && !profile.password.isEmpty()) {
-                meta.append(" · 已记住密码");
+                meta.append(" · " + getString(R.string.remember_password_saved));
             }
             holder.textMeta.setText(meta.toString());
             holder.imageCurrent.setVisibility(View.GONE);

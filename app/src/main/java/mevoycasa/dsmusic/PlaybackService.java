@@ -655,7 +655,7 @@ public class PlaybackService extends Service {
         }
         ensureNotificationActions();
         String title = currentTitle.isEmpty() ? getString(R.string.app_name) : buildDisplayTitle(sanitizeDisplayTitle(currentTitle), currentArtist);
-        String content = cachingActive ? "正在缓存歌曲" : "正在准备播放";
+        String content = cachingActive ? getString(R.string.caching_song) : getString(R.string.preparing_to_play);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         builder.setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
@@ -670,9 +670,9 @@ public class PlaybackService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setContentIntent(contentIntent == null ? buildContentIntent() : contentIntent)
                 .setStyle(new MediaStyle().setShowActionsInCompactView(1, 2))
-                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, "上一首", actionPreviousIntent))
-                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_pause, cachingActive ? "暂停" : "播放", actionPlayPauseIntent))
-                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_next, "下一首", actionNextIntent));
+                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, getString(R.string.previous_track), actionPreviousIntent))
+                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_pause, cachingActive ? getString(R.string.pause) : getString(R.string.play), actionPlayPauseIntent))
+                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_next, getString(R.string.next_track), actionNextIntent));
         builder.setProgress(cachingActive ? 100 : 0, cachingActive ? currentPercent : 0, false);
         return builder.build();
     }
@@ -887,10 +887,10 @@ public class PlaybackService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setContentIntent(contentIntent == null ? buildContentIntent() : contentIntent)
                 .setStyle(new MediaStyle().setShowActionsInCompactView(1, 2))
-                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, "上一首", actionPreviousIntent))
+                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, getString(R.string.previous_track), actionPreviousIntent))
                 .addAction(new NotificationCompat.Action(playing ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play,
-                        playing ? "暂停" : "播放", actionPlayPauseIntent))
-                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_next, "下一首", actionNextIntent));
+                        playing ? getString(R.string.pause) : getString(R.string.play), actionPlayPauseIntent))
+                .addAction(new NotificationCompat.Action(android.R.drawable.ic_media_next, getString(R.string.next_track), actionNextIntent));
         if (cachingActive) {
             builder.setProgress(100, currentPercent, false);
         } else if (currentDurationMs > 0L) {

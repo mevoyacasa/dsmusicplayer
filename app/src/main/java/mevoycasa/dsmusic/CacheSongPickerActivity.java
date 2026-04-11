@@ -81,13 +81,13 @@ public class CacheSongPickerActivity extends AppCompatActivity {
     private void updateSubtitle() {
         textSubtitle.setText("Cached " + cachedSongs.size() + " · Selected " + selectedIds.size());
         if (buttonSelectAllCache != null) {
-            buttonSelectAllCache.setText(selectedIds.size() == cachedSongs.size() && !cachedSongs.isEmpty() ? "取消全选" : "全选");
+            buttonSelectAllCache.setText(selectedIds.size() == cachedSongs.size() && !cachedSongs.isEmpty() ? getString(R.string.deselect_all) : getString(R.string.select_all));
         }
     }
 
     private void deleteSelected() {
         if (selectedIds.isEmpty()) {
-            Toast.makeText(this, "鏈€夋嫨姝屾洸", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.please_select_songs_first), Toast.LENGTH_SHORT).show();
             return;
         }
         int deleted = 0;
@@ -113,7 +113,7 @@ public class CacheSongPickerActivity extends AppCompatActivity {
         }
         selectedIds.clear();
         loadCachedSongs();
-        Toast.makeText(this, "Deleted " + deleted + " cached files", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.please_select_songs_first), Toast.LENGTH_SHORT).show();
     }
 
     private void toggleCacheSelectAll() {
@@ -146,7 +146,7 @@ public class CacheSongPickerActivity extends AppCompatActivity {
             ApiClient.MediaItemModel item = cachedSongs.get(position);
             holder.textTitle.setText(item.title);
             holder.textSubtitle.setText(item.artist + "  " + item.album);
-            holder.textMeta.setText("宸");
+            holder.textMeta.setText(getString(R.string.cached));
             holder.imageCached.setVisibility(View.VISIBLE);
             holder.imageAction.setVisibility(View.GONE);
             holder.imageCover.setImageResource(R.drawable.ic_music_note);

@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/textTab"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_tab_chip_selector_am"
     android:gravity="center"
-    android:includeFontPadding="false"
-    android:minHeight="38dp"
-    android:paddingLeft="14dp"
-    android:paddingTop="7dp"
-    android:paddingRight="14dp"
-    android:paddingBottom="7dp"
-    android:singleLine="true"
-    android:ellipsize="end"
-    android:textColor="@color/tab_chip_text"
-    android:textSize="15sp"
-    android:textStyle="bold" />
+    android:minHeight="40dp"
+    android:paddingLeft="16dp"
+    android:paddingTop="8dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/iconTab"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:contentDescription="@string/tab_icon"
+        android:tint="@color/tab_icon_color" />
+
+</LinearLayout>

@@ -73,7 +73,7 @@ public class OfflineCacheActivity extends AppCompatActivity {
         if (buttonSortByPlayCount == null) {
             return;
         }
-        buttonSortByPlayCount.setText(sortByPlayCount ? "按播放频率排序" : "默认排序");
+        buttonSortByPlayCount.setText(sortByPlayCount ? getString(R.string.sort_by_play_count) : getString(R.string.default_sort));
         buttonSortByPlayCount.setBackgroundResource(sortByPlayCount ? R.drawable.bg_tab_selected_pill : R.drawable.bg_chip_soft);
         buttonSortByPlayCount.setTextColor(getColor(sortByPlayCount ? R.color.white : R.color.subtle));
     }
@@ -109,14 +109,14 @@ public class OfflineCacheActivity extends AppCompatActivity {
 
     private void confirmClearHistory() {
         new AlertDialog.Builder(this)
-                .setTitle("清除播放记录")
-                .setMessage("这会清空播放次数与播放历史，但不会删除已下载歌曲。")
-                .setPositiveButton("清除", (dialog, which) -> {
+                .setTitle(getString(R.string.clear_play_history))
+                .setMessage(getString(R.string.clear_history_description))
+                .setPositiveButton(getString(R.string.clear), (dialog, which) -> {
                     apiClient.clearHistory();
                     loadCachedSongs();
-                    Toast.makeText(this, "播放记录已清除", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.play_history_cleared), Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 

@@ -134,7 +134,8 @@ public class ApiClient {
     public static final String KEY_CACHE_LOCATION_PROMPT_DONE = "cache_location_prompt_done";
     public static final String KEY_CACHE_RULE_DAYS_ENABLED = "cache_rule_days_enabled";
     public static final String KEY_CACHE_RULE_SIZE_ENABLED = "cache_rule_size_enabled";
-    public static final String KEY_LYRIC_OFFSET_MS = "lyric_offset_ms";
+    public static final String KEY_LYRIC_OFFSET_MS = "lyric_offset_ms";    
+    public static final String KEY_APP_LANGUAGE = "app_language";
 
     private static final String INTERNAL_SONG_CACHE_DIR = "songs";
     private static final String INTERNAL_COVER_CACHE_DIR = "covers";
@@ -172,6 +173,14 @@ public class ApiClient {
         preferences.edit().putLong(KEY_LYRIC_OFFSET_MS, offsetMs).apply();
     }
 
+    public String getAppLanguage() {
+        return preferences.getString(KEY_APP_LANGUAGE, "zh");
+    }
+
+    public void setAppLanguage(String language) {
+        preferences.edit().putString(KEY_APP_LANGUAGE, language).apply();
+    }
+
     public void setSongCacheTreeUri(@Nullable Uri treeUri) {
         SharedPreferences.Editor editor = preferences.edit();
         if (treeUri == null) {
@@ -202,7 +211,7 @@ public class ApiClient {
     public String getSongCacheDirectoryLabel() {
         Uri treeUri = getSongCacheTreeUri();
         if (treeUri == null) {
-            return "应用内部缓存";
+            return appContext.getString(R.string.app_internal_cache);
         }
         DocumentFile root = DocumentFile.fromTreeUri(appContext, treeUri);
         if (root != null) {
@@ -979,7 +988,7 @@ public class ApiClient {
         String normalizedHost = normalizeHost(host, forceHttps);
         HttpUrl base = HttpUrl.parse(normalizedHost + "/webapi/auth.cgi");
         if (base == null) {
-            postError(callback, "服务器地址无效");
+            postError(callback, appContext.getString(R.string.server_address_invalid));
             return;
         }
         HttpUrl url = base.newBuilder()
@@ -1032,7 +1041,7 @@ public class ApiClient {
         String sid = preferences.getString(KEY_SID, "");
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         if (TextUtils.isEmpty(host) || TextUtils.isEmpty(sid)) {
-            postError(callback, "登录已过期，请重新登录");
+            postError(callback, appContext.getString(R.string.login_expired_please_relogin));
             return;
         }
         if ("search".equals(mode)) {
@@ -1045,7 +1054,7 @@ public class ApiClient {
         }
         HttpUrl url = buildListUrl(host, mode, id, parentType, keyword, sid, offset, limit, sortBy, sortDirection);
         if (url == null) {
-            postError(callback, "暂不支持的浏览类型");
+            postError(callback, appContext.getString(R.string.unsupported_browse_type));
             return;
         }
         executeJsonOnce(url, ignoreCert, new JsonCallback() {
@@ -1085,7 +1094,7 @@ public class ApiClient {
         String sid = preferences.getString(KEY_SID, "");
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         if (TextUtils.isEmpty(host) || TextUtils.isEmpty(sid)) {
-            postError(callback, "登录已过期，请重新登录");
+            postError(callback, appContext.getString(R.string.login_expired_please_relogin));
             return;
         }
         fetchAllSongsPage(host, sid, ignoreCert, 0, 200, "title", "ASC", new ArrayList<>(), callback);
@@ -1093,7 +1102,7 @@ public class ApiClient {
 
     public void createPlaylist(String name, StringCallback callback) {
         if (TextUtils.isEmpty(name)) {
-            postError(callback, "歌单名称不能为空");
+            postError(callback, appContext.getString(R.string.playlist_name_empty_error));
             return;
         }
         String host = preferences.getString(KEY_HOST, "");
@@ -1101,7 +1110,7 @@ public class ApiClient {
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         HttpUrl base = HttpUrl.parse(host + "/webapi/AudioStation/playlist.cgi");
         if (base == null) {
-            postError(callback, "歌单接口地址无效");
+            postError(callback, appContext.getString(R.string.playlist_api_invalid));
             return;
         }
         HttpUrl url = base.newBuilder()
@@ -1133,7 +1142,7 @@ public class ApiClient {
 
     public void renamePlaylist(String playlistId, String newName, StringCallback callback) {
         if (TextUtils.isEmpty(playlistId) || TextUtils.isEmpty(newName)) {
-            postError(callback, "歌单参数不完整");
+            postError(callback, appContext.getString(R.string.playlist_params_incomplete));
             return;
         }
         String host = preferences.getString(KEY_HOST, "");
@@ -1141,7 +1150,7 @@ public class ApiClient {
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         HttpUrl base = HttpUrl.parse(host + "/webapi/AudioStation/playlist.cgi");
         if (base == null) {
-            postError(callback, "歌单接口地址无效");
+            postError(callback, appContext.getString(R.string.playlist_api_invalid));
             return;
         }
         HttpUrl url = base.newBuilder()
@@ -1171,7 +1180,7 @@ public class ApiClient {
 
     public void deletePlaylist(String playlistId, StringCallback callback) {
         if (TextUtils.isEmpty(playlistId)) {
-            postError(callback, "歌单参数不完整");
+            postError(callback, appContext.getString(R.string.playlist_params_incomplete));
             return;
         }
         String host = preferences.getString(KEY_HOST, "");
@@ -1179,7 +1188,7 @@ public class ApiClient {
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         HttpUrl base = HttpUrl.parse(host + "/webapi/AudioStation/playlist.cgi");
         if (base == null) {
-            postError(callback, "歌单接口地址无效");
+            postError(callback, appContext.getString(R.string.playlist_api_invalid));
             return;
         }
         HttpUrl url = base.newBuilder()
@@ -1208,7 +1217,7 @@ public class ApiClient {
 
     public void addSongsToPlaylist(String playlistId, List<String> songIds, StringCallback callback) {
         if (TextUtils.isEmpty(playlistId) || songIds == null || songIds.isEmpty()) {
-            postError(callback, "没有可添加的歌曲");
+            postError(callback, appContext.getString(R.string.no_songs_to_add_error));
             return;
         }
         addSongsToPlaylistWithRetry(playlistId, new ArrayList<>(songIds), callback, 0);
@@ -1217,7 +1226,7 @@ public class ApiClient {
     private void addSongsToPlaylistWithRetry(String playlistId, List<String> songIds, StringCallback callback, int attempt) {
         List<String> normalized = normalizeSongIds(songIds);
         if (normalized.isEmpty()) {
-            postError(callback, "娌℃湁鍙坊鍔犵殑姝屾洸");
+            postError(callback, appContext.getString(R.string.no_songs_to_add_error));
             return;
         }
         fetchPlaylistSongIds(playlistId, new StringListCallback() {
@@ -1264,14 +1273,14 @@ public class ApiClient {
 
     public void removeSongFromPlaylist(String playlistId, String songId, StringCallback callback) {
         if (TextUtils.isEmpty(playlistId) || TextUtils.isEmpty(songId)) {
-            postError(callback, "歌单参数不完整");
+            postError(callback, appContext.getString(R.string.playlist_params_incomplete));
             return;
         }
         fetchPlaylistSongIds(playlistId, new StringListCallback() {
             @Override
             public void onSuccess(List<String> values) {
                 if (values == null || values.isEmpty()) {
-                    postError(callback, "歌单中没有可移除的歌曲");
+                    postError(callback, appContext.getString(R.string.no_removable_songs_in_playlist));
                     return;
                 }
                 ArrayList<String> remaining = new ArrayList<>();
@@ -1281,7 +1290,7 @@ public class ApiClient {
                     }
                 }
                 if (remaining.size() == values.size()) {
-                    postError(callback, "歌单中未找到该歌曲");
+                    postError(callback, appContext.getString(R.string.song_not_found_in_playlist));
                     return;
                 }
                 replacePlaylistSongs(playlistId, remaining, values.size(), callback);
@@ -1296,7 +1305,7 @@ public class ApiClient {
 
     public void replacePlaylistSongs(String playlistId, List<String> songIds, int currentCount, StringCallback callback) {
         if (TextUtils.isEmpty(playlistId)) {
-            postError(callback, "歌单参数不完整");
+            postError(callback, appContext.getString(R.string.playlist_params_incomplete));
             return;
         }
         updatePlaylistSongs(playlistId, 0, Math.max(currentCount, 0), joinSongIds(songIds), callback);
@@ -1308,7 +1317,7 @@ public class ApiClient {
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         HttpUrl base = HttpUrl.parse(host + "/webapi/AudioStation/lyrics.cgi");
         if (base == null) {
-            postError(callback, "歌词接口地址无效");
+            postError(callback, appContext.getString(R.string.lyrics_api_invalid));
             return;
         }
         HttpUrl url = base.newBuilder()
@@ -1339,7 +1348,7 @@ public class ApiClient {
 
     public void cacheSongToConfiguredDirectory(MediaItemModel item, CacheCallback callback) {
         if (item == null || TextUtils.isEmpty(item.id)) {
-            postError(callback, "姝屾洸淇℃伅涓嶅畬鏁?");
+            postError(callback, appContext.getString(R.string.song_info_incomplete));
             return;
         }
         DocumentFile customTarget = createCustomSongCacheFile(item);
@@ -1376,7 +1385,7 @@ public class ApiClient {
 
                 @Override
                 public void onError(String message) {
-                    if ("无法写入缓存文件".equals(message)) {
+                    if (appContext.getString(R.string.cannot_write_cache_file).equals(message)) {
                         startInternalSongCacheDownload(item, legacyTarget, callback);
                         return;
                     }
@@ -1393,7 +1402,7 @@ public class ApiClient {
     private void startInternalSongCacheDownload(MediaItemModel item, File legacyTarget, CacheCallback callback) {
         File dir = legacyTarget.getParentFile();
         if (dir != null && !dir.exists() && !dir.mkdirs()) {
-            postError(callback, "鏃犳硶鍒涘缓姝屾洸缂撳瓨鐩綍");
+            postError(callback, appContext.getString(R.string.cannot_create_song_cache_dir));
             return;
         }
         currentSongCacheCall = downloadToFile(buildStreamUrl(item.id), legacyTarget, new CacheCallback() {
@@ -1454,12 +1463,12 @@ public class ApiClient {
 
     public void cacheSong(MediaItemModel item, CacheCallback callback) {
         if (item == null || TextUtils.isEmpty(item.id)) {
-            postError(callback, "歌曲信息不完整");
+            postError(callback, appContext.getString(R.string.song_info_incomplete));
             return;
         }
         File dir = new File(appContext.getCacheDir(), "songs");
         if (!dir.exists() && !dir.mkdirs()) {
-            postError(callback, "无法创建歌曲缓存目录");
+            postError(callback, appContext.getString(R.string.cannot_create_song_cache_dir));
             return;
         }
         String extension = guessFileExtension(item.path);
@@ -1549,12 +1558,12 @@ public class ApiClient {
 
     public void cacheCover(String type, String id, StringCallback callback) {
         if (TextUtils.isEmpty(id)) {
-            postError(callback, "封面标识缺失");
+            postError(callback, appContext.getString(R.string.cover_id_missing));
             return;
         }
         File target = getCoverCacheFile(type, id);
         if (target == null) {
-            postError(callback, "无法创建封面缓存目录");
+            postError(callback, appContext.getString(R.string.cannot_create_cover_cache_dir));
             return;
         }
         if (target.exists() && isValidImageFile(target)) {
@@ -1953,7 +1962,7 @@ public class ApiClient {
         String sid = preferences.getString(KEY_SID, "");
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         if (TextUtils.isEmpty(host) || TextUtils.isEmpty(sid)) {
-            postError(callback, "登录已过期，请重新登录");
+            postError(callback, appContext.getString(R.string.login_expired_please_relogin));
             return;
         }
         String trimmed = keyword == null ? "" : keyword.trim();
@@ -1988,7 +1997,7 @@ public class ApiClient {
     private void fetchSongFallbackSearch(String host, String sid, boolean ignoreCert, String keyword, int offset, int limit, String sortBy, String sortDirection, ArrayCallback callback) {
         HttpUrl url = buildListUrl(host, "songs", null, null, null, sid, offset, limit, sortBy, sortDirection);
         if (url == null) {
-            postError(callback, "搜索失败");
+            postError(callback, appContext.getString(R.string.search_failed));
             return;
         }
         executeJson(url, ignoreCert, new JsonCallback() {
@@ -2043,7 +2052,7 @@ public class ApiClient {
     private void fetchSongSearchPage(String host, String sid, boolean ignoreCert, int offset, int limit, String sortBy, String sortDirection, String lowerKeyword, List<MediaItemModel> matches, ArrayCallback callback) {
         HttpUrl url = buildListUrl(host, "songs", null, null, null, sid, offset, limit, sortBy, sortDirection);
         if (url == null) {
-            postError(callback, "搜索失败");
+            postError(callback, appContext.getString(R.string.search_failed));
             return;
         }
         executeJson(url, ignoreCert, new JsonCallback() {
@@ -2093,7 +2102,7 @@ public class ApiClient {
     private void fetchAllSongsPage(String host, String sid, boolean ignoreCert, int offset, int limit, String sortBy, String sortDirection, List<MediaItemModel> songs, ArrayCallback callback) {
         HttpUrl url = buildListUrl(host, "songs", null, null, null, sid, offset, limit, sortBy, sortDirection);
         if (url == null) {
-            postError(callback, "获取歌曲失败");
+            postError(callback, appContext.getString(R.string.fetch_song_failed));
             return;
         }
         executeJson(url, ignoreCert, new JsonCallback() {
@@ -2134,7 +2143,7 @@ public class ApiClient {
     private void fetchPlaylistSongs(String host, String sid, boolean ignoreCert, String playlistId, int offset, int limit, ArrayCallback callback) {
         HttpUrl base = HttpUrl.parse(host + "/webapi/AudioStation/playlist.cgi");
         if (base == null) {
-            postError(callback, "歌单接口地址无效");
+            postError(callback, appContext.getString(R.string.playlist_api_invalid));
             return;
         }
         HttpUrl url = base.newBuilder()
@@ -2180,7 +2189,7 @@ public class ApiClient {
 
     public void fetchAllPlaylistSongs(String playlistId, ArrayCallback callback) {
         if (TextUtils.isEmpty(playlistId)) {
-            postError(callback, "歌单参数不完整");
+            postError(callback, appContext.getString(R.string.playlist_params_incomplete));
             return;
         }
         String host = preferences.getString(KEY_HOST, "");
@@ -2192,7 +2201,7 @@ public class ApiClient {
     private void fetchAllPlaylistSongsPage(String host, String sid, boolean ignoreCert, String playlistId, int offset, int limit, List<MediaItemModel> songs, ArrayCallback callback) {
         HttpUrl base = HttpUrl.parse(host + "/webapi/AudioStation/playlist.cgi");
         if (base == null) {
-            postError(callback, "歌单接口地址无效");
+            postError(callback, appContext.getString(R.string.playlist_api_invalid));
             return;
         }
         HttpUrl url = base.newBuilder()
@@ -2248,7 +2257,7 @@ public class ApiClient {
 
     public void fetchPlaylistSongIds(String playlistId, StringListCallback callback) {
         if (TextUtils.isEmpty(playlistId)) {
-            postError(callback, "歌单参数不完整");
+            postError(callback, appContext.getString(R.string.playlist_params_incomplete));
             return;
         }
         String host = preferences.getString(KEY_HOST, "");
@@ -2256,7 +2265,7 @@ public class ApiClient {
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         HttpUrl base = HttpUrl.parse(host + "/webapi/AudioStation/playlist.cgi");
         if (base == null) {
-            postError(callback, "歌单接口地址无效");
+            postError(callback, appContext.getString(R.string.playlist_api_invalid));
             return;
         }
         HttpUrl url = base.newBuilder()
@@ -2307,7 +2316,7 @@ public class ApiClient {
         boolean ignoreCert = preferences.getBoolean(KEY_IGNORE_CERT, true);
         HttpUrl base = HttpUrl.parse(host + "/webapi/AudioStation/playlist.cgi");
         if (base == null) {
-            postError(callback, "歌单接口地址无效");
+            postError(callback, appContext.getString(R.string.playlist_api_invalid));
             return;
         }
         HttpUrl.Builder builder = base.newBuilder()
@@ -2426,7 +2435,7 @@ public class ApiClient {
     private MediaItemModel parseSong(JSONObject song) {
         MediaItemModel item = new MediaItemModel();
         item.id = song.optString("id");
-        item.title = song.optString("title", "未知歌曲");
+        item.title = song.optString("title", appContext.getString(R.string.unknown_song));
         item.type = "song";
         item.raw = song;
         JSONObject additional = song.optJSONObject("additional");
@@ -2440,8 +2449,8 @@ public class ApiClient {
         if (TextUtils.isEmpty(album)) {
             album = song.optString("album", song.optString("album_name", ""));
         }
-        item.artist = TextUtils.isEmpty(artist) ? "未知歌手" : artist;
-        item.album = TextUtils.isEmpty(album) ? "未知专辑" : album;
+        item.artist = TextUtils.isEmpty(artist) ? appContext.getString(R.string.unknown_artist) : artist;
+        item.album = TextUtils.isEmpty(album) ? appContext.getString(R.string.unknown_album) : album;
         item.subtitle = item.artist + " · " + item.album;
         item.coverUrl = buildCoverUrl("song", item.id);
         item.streamUrl = buildStreamUrl(item.id);
@@ -2453,9 +2462,9 @@ public class ApiClient {
     private MediaItemModel parseArtist(JSONObject artist) {
         MediaItemModel item = new MediaItemModel();
         item.id = artist.optString("name", artist.optString("id"));
-        item.title = artist.optString("name", "未知歌手");
+        item.title = artist.optString("name", appContext.getString(R.string.unknown_artist));
         item.type = "artist";
-        item.subtitle = "歌手";
+        item.subtitle = appContext.getString(R.string.artists);
         item.coverUrl = buildCoverUrl("artist", item.id);
         item.raw = artist;
         return item;
@@ -2464,11 +2473,11 @@ public class ApiClient {
     private MediaItemModel parseAlbum(JSONObject album) {
         MediaItemModel item = new MediaItemModel();
         item.id = album.optString("id", album.optString("name"));
-        item.title = album.optString("name", "未知专辑");
+        item.title = album.optString("name", appContext.getString(R.string.unknown_album));
         item.artist = album.optString("artist", "");
         item.album = item.title;
         item.type = "album";
-        item.subtitle = TextUtils.isEmpty(item.artist) ? "专辑" : item.artist;
+        item.subtitle = TextUtils.isEmpty(item.artist) ? appContext.getString(R.string.album) : item.artist;
         item.coverUrl = buildCoverUrl("album", item.id);
         item.raw = album;
         return item;
@@ -2477,9 +2486,9 @@ public class ApiClient {
     private MediaItemModel parsePlaylist(JSONObject playlist) {
         MediaItemModel item = new MediaItemModel();
         item.id = playlist.optString("id");
-        item.title = displayPlaylistTitle(playlist.optString("name", playlist.optString("id", "歌单")), item.id);
+        item.title = displayPlaylistTitle(playlist.optString("name", playlist.optString("id", appContext.getString(R.string.playlist))), item.id);
         item.type = "playlist";
-        item.subtitle = "歌单";
+        item.subtitle = appContext.getString(R.string.playlist);
         item.coverUrl = buildCoverUrl("playlist", item.id);
         item.raw = playlist;
         return item;
@@ -2488,10 +2497,10 @@ public class ApiClient {
     private String displayPlaylistTitle(String name, String id) {
         String raw = TextUtils.isEmpty(name) ? id : name;
         if (TextUtils.isEmpty(raw)) {
-            return "歌单";
+            return appContext.getString(R.string.playlist);
         }
         if ("__SYNO_AUDIO_SHARED_SONGS__".equals(raw) || "__SYNO_AUDIO_SHARED_SONGS__".equals(id)) {
-            return "群晖公共歌单";
+            return appContext.getString(R.string.synology_public_playlist);
         }
         return raw;
     }
@@ -2499,10 +2508,10 @@ public class ApiClient {
     private MediaItemModel parseFolder(JSONObject folder) {
         MediaItemModel item = new MediaItemModel();
         item.id = folder.optString("id", folder.optString("path"));
-        item.title = folder.optString("name", folder.optString("path", "文件夹"));
+        item.title = folder.optString("name", folder.optString("path", appContext.getString(R.string.folder)));
         item.type = "folder";
         item.path = folder.optString("path", "");
-        item.subtitle = TextUtils.isEmpty(item.path) ? "文件夹" : item.path;
+        item.subtitle = TextUtils.isEmpty(item.path) ? appContext.getString(R.string.folder) : item.path;
         item.coverUrl = buildCoverUrl("folder", item.id);
         item.raw = folder;
         return item;
@@ -2532,7 +2541,7 @@ public class ApiClient {
         List<LyricLine> lines = new ArrayList<>();
         if (TextUtils.isEmpty(rawLyrics)) {
             LyricLine line = new LyricLine();
-            line.primary = "暂无歌词";
+            line.primary = appContext.getString(R.string.no_lyrics);
             line.secondary = "";
             line.timeMs = 0L;
             lines.add(line);
@@ -2666,14 +2675,14 @@ public class ApiClient {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    postError(callback, "网络错误: " + response.code());
+                    postError(callback, appContext.getString(R.string.network_error, String.valueOf(response.code())));
                     return;
                 }
                 String body = response.body() == null ? "" : response.body().string();
                 try {
                     postSuccess(callback, new JSONObject(body));
                 } catch (JSONException e) {
-                    postError(callback, "返回数据无法解析");
+                    postError(callback, appContext.getString(R.string.response_data_unparseable));
                 }
             }
         });
@@ -2699,14 +2708,14 @@ public class ApiClient {
                         scheduleJsonRetry(url, ignoreCert, callback, attempt + 1);
                         return;
                     }
-                    postError(callback, "网络错误: " + response.code());
+                    postError(callback, appContext.getString(R.string.network_error, String.valueOf(response.code())));
                     return;
                 }
                 String body = response.body() == null ? "" : response.body().string();
                 try {
                     postSuccess(callback, new JSONObject(body));
                 } catch (JSONException e) {
-                    postError(callback, "返回数据无法解析");
+                    postError(callback, appContext.getString(R.string.response_data_unparseable));
                 }
             }
         });
@@ -2830,18 +2839,18 @@ public class ApiClient {
                         scheduleDownloadRetry(url, target, callback, cancelAware, attempt + 1, true);
                         return;
                     }
-                    postError(callback, "下载失败: " + response.code());
+                    postError(callback, appContext.getString(R.string.download_failed, String.valueOf(response.code())));
                     return;
                 }
                 if (response.body() == null) {
-                    postError(callback, "返回内容为空");
+                    postError(callback, appContext.getString(R.string.response_content_empty));
                     return;
                 }
                 ContentResolver resolver = appContext.getContentResolver();
                 try (InputStream inputStream = response.body().byteStream();
                      OutputStream outputStream = resolver.openOutputStream(target.getUri(), "w")) {
                     if (outputStream == null) {
-                        postError(callback, "无法写入缓存文件");
+                        postError(callback, appContext.getString(R.string.cannot_write_cache_file));
                         return;
                     }
                     byte[] buffer = new byte[8192];
@@ -2872,7 +2881,7 @@ public class ApiClient {
                     postError(callback, e.getMessage());
                 } catch (Throwable t) {
                     target.delete();
-                    postError(callback, "无法写入缓存文件");
+                    postError(callback, appContext.getString(R.string.cannot_write_cache_file));
                 }
             }
         });
@@ -2923,16 +2932,16 @@ public class ApiClient {
                         scheduleDownloadRetry(url, target, callback, cancelAware, attempt + 1, false);
                         return;
                     }
-                    postError(callback, "下载失败: " + response.code());
+                    postError(callback, appContext.getString(R.string.download_failed, String.valueOf(response.code())));
                     return;
                 }
                 if (response.body() == null) {
-                    postError(callback, "返回内容为空");
+                    postError(callback, appContext.getString(R.string.response_content_empty));
                     return;
                 }
                 File parent = target.getParentFile();
                 if (parent != null && !parent.exists() && !parent.mkdirs()) {
-                    postError(callback, "无法创建缓存目录");
+                    postError(callback, appContext.getString(R.string.cannot_create_song_cache_dir));
                     return;
                 }
                 try (InputStream inputStream = response.body().byteStream();
@@ -3081,17 +3090,17 @@ public class ApiClient {
         int code = error == null ? -1 : error.optInt("code", -1);
         switch (code) {
             case 400:
-                return "参数错误";
+                return appContext.getString(R.string.error_invalid_param);
             case 401:
-                return "认证失败";
+                return appContext.getString(R.string.error_auth_failed);
             case 402:
-                return "权限不足";
+                return appContext.getString(R.string.error_permission_denied);
             case 404:
-                return "接口不存在";
+                return appContext.getString(R.string.error_api_not_found);
             case 406:
-                return "会话超时，请重新登录";
+                return appContext.getString(R.string.error_session_timeout);
             default:
-                return code == -1 ? "请求失败" : "请求失败，错误码 " + code;
+                return code == -1 ? appContext.getString(R.string.request_failed) : appContext.getString(R.string.request_failed_with_code, code);
         }
     }
 
@@ -3100,7 +3109,7 @@ public class ApiClient {
     }
 
     private void postError(JsonCallback callback, String message) {
-        mainHandler.post(() -> callback.onError(message == null ? "请求失败" : message));
+        mainHandler.post(() -> callback.onError(message == null ? appContext.getString(R.string.request_failed) : message));
     }
 
     private void postSuccess(ArrayCallback callback, List<MediaItemModel> items, boolean hasMore, int total) {
@@ -3108,7 +3117,7 @@ public class ApiClient {
     }
 
     private void postError(ArrayCallback callback, String message) {
-        mainHandler.post(() -> callback.onError(message == null ? "请求失败" : message));
+        mainHandler.post(() -> callback.onError(message == null ? appContext.getString(R.string.request_failed) : message));
     }
 
     private void postSuccess(LyricsCallback callback, List<LyricLine> lines) {
@@ -3116,7 +3125,7 @@ public class ApiClient {
     }
 
     private void postError(LyricsCallback callback, String message) {
-        mainHandler.post(() -> callback.onError(message == null ? "请求失败" : message));
+        mainHandler.post(() -> callback.onError(message == null ? appContext.getString(R.string.request_failed) : message));
     }
 
     private void postSuccess(StringListCallback callback, List<String> values) {
@@ -3124,7 +3133,7 @@ public class ApiClient {
     }
 
     private void postError(StringListCallback callback, String message) {
-        mainHandler.post(() -> callback.onError(message == null ? "请求失败" : message));
+        mainHandler.post(() -> callback.onError(message == null ? appContext.getString(R.string.request_failed) : message));
     }
 
     private void postSuccess(StringCallback callback, String value) {
@@ -3132,7 +3141,7 @@ public class ApiClient {
     }
 
     private void postError(StringCallback callback, String message) {
-        mainHandler.post(() -> callback.onError(message == null ? "请求失败" : message));
+        mainHandler.post(() -> callback.onError(message == null ? appContext.getString(R.string.request_failed) : message));
     }
 
     private void postProgress(CacheCallback callback, int percent) {
@@ -3144,6 +3153,6 @@ public class ApiClient {
     }
 
     private void postError(CacheCallback callback, String message) {
-        mainHandler.post(() -> callback.onError(message == null ? "请求失败" : message));
+        mainHandler.post(() -> callback.onError(message == null ? appContext.getString(R.string.request_failed) : message));
     }
 }

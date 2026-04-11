@@ -238,6 +238,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        // 设置应用语言
+        String language = new ApiClient(this).getAppLanguage();
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+        android.content.res.Configuration config = new android.content.res.Configuration();
+        config.locale = locale;
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         apiClient = new ApiClient(this);
@@ -359,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         lastBackPressedAt = now;
-        toast("再按一次退出到桌面");
+        toast(getString(R.string.double_press_exit));
     }
 
     private void bindViews() {
@@ -427,11 +435,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupTabs() {
-        addTab("songs", "歌曲");
-        addTab("artists", "歌手");
-        addTab("albums", "专辑");
-        addTab("playlists", "歌单");
-        addTab("search", "搜索");
+        addTab("songs", R.drawable.ic_tab_song, getString(R.string.songs));
+        addTab("artists", R.drawable.ic_tab_artist, getString(R.string.artists));
+        addTab("albums", R.drawable.ic_tab_playlist, getString(R.string.albums));
+        addTab("playlists", R.drawable.ic_tab_playlist, getString(R.string.playlists));
+        addTab("search", R.drawable.ic_tab_search, getString(R.string.search));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -477,10 +485,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupHomeTabs() {
         tabLayout.removeAllTabs();
-        addTab("playlists", "歌单");
-        addTab("songs", "歌曲");
-        addTab("artists", "歌手");
-        addTab("search", "搜索");
+        addTab("playlists", R.drawable.ic_tab_playlist, getString(R.string.playlists));
+        addTab("songs", R.drawable.ic_tab_song, getString(R.string.songs));
+        addTab("artists", R.drawable.ic_tab_artist, getString(R.string.artists));
+        addTab("search", R.drawable.ic_tab_search, getString(R.string.search));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -677,7 +685,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlayerError(@NonNull PlaybackException error) {
                 Log.e(TAG, "Player error: " + error.getErrorCodeName() + " " + error.getMessage(), error);
-                toast("播放失败：" + error.getMessage());
+                toast(getString(R.string.playback_failed) + error.getMessage());
             }
         });
         // Do not start PlaybackService here. Starting it during app bootstrap can delay
@@ -902,7 +910,7 @@ public class MainActivity extends AppCompatActivity {
         apiClient.setConcurrentPlaybackAllowed(allowShared);
         refreshAudioConflictTabs();
         PlaybackService.updateAudioFocusPolicy(this);
-        toast(allowShared ? "已允许与其他媒体共存" : "已切换为独占播放");
+        toast(allowShared ? getString(R.string.allowed_media_coexistence) : getString(R.string.switched_to_exclusive_playback));
     }
 
     // Avatar feature removed.
@@ -911,7 +919,7 @@ public class MainActivity extends AppCompatActivity {
         List<ApiClient.AccountProfile> profiles = apiClient.readAccountProfiles();
         if (profiles.isEmpty()) {
             startActivity(new Intent(this, LoginActivity.class));
-            toast("暂无已保存账号，请先登录");
+            toast(getString(R.string.no_saved_accounts));
             return;
         }
 
@@ -927,7 +935,7 @@ public class MainActivity extends AppCompatActivity {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        textSubtitle.setText("选择一个已保存账号快速切换");
+        textSubtitle.setText(getString(R.string.select_account_to_switch));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new AccountProfileAdapter(profiles, profile -> {
             dialog.dismiss();
@@ -985,9 +993,9 @@ public class MainActivity extends AppCompatActivity {
             StringBuilder meta = new StringBuilder();
             meta.append(profile.forceHttps ? "HTTPS" : "HTTP");
             meta.append(" \u00b7 ");
-            meta.append(profile.ignoreCert ? "忽略证书" : "验证证书");
+            meta.append(profile.ignoreCert ? getString(R.string.ignore_certificate) : getString(R.string.verify_certificate));
             if (!TextUtils.isEmpty(profile.password)) {
-                meta.append(" · 已记住密码");
+                meta.append(" · " + getString(R.string.remember_password));
             }
             holder.textMeta.setText(meta.toString());
             boolean current = TextUtils.equals(currentHost, profile.host) && TextUtils.equals(currentAccount, profile.account);
@@ -1028,7 +1036,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void switchAccountProfile(ApiClient.AccountProfile profile) {
         if (profile == null || TextUtils.isEmpty(profile.account) || TextUtils.isEmpty(profile.host)) {
-            toast("账号信息不完整");
+            toast(getString(R.string.account_info_incomplete));
             return;
         }
         String normalizedHost = apiClient.normalizeHost(profile.host, profile.forceHttps);
@@ -1052,7 +1060,7 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean(ApiClient.KEY_REMEMBER_PASSWORD, !TextUtils.isEmpty(profile.password))
                 .apply();
 
-        toast("正在切换账号：" + profile.account);
+        toast(getString(R.string.switching_account) + profile.account);
         apiClient.login(normalizedHost, profile.account, profile.password == null ? "" : profile.password, profile.forceHttps, profile.ignoreCert, new ApiClient.JsonCallback() {
             @Override
             public void onSuccess(org.json.JSONObject json) {
@@ -1060,7 +1068,7 @@ public class MainActivity extends AppCompatActivity {
                 browserItems.clear();
                 browserAdapter.notifyDataSetChanged();
                 loadFirstPage(true);
-                toast("已切换到：" + profile.account);
+                toast(getString(R.string.switched_to) + profile.account);
             }
 
             @Override
@@ -1094,7 +1102,7 @@ public class MainActivity extends AppCompatActivity {
             currentParentType = "playlist";
             currentSortBy = "title";
             currentSortDirection = "ASC";
-            pendingHeader = TextUtils.isEmpty(savedHeader) ? "歌单" : savedHeader;
+            pendingHeader = TextUtils.isEmpty(savedHeader) ? getString(R.string.playlists) : savedHeader;
             internalModeSwitch = true;
             if (!selectTabByMode("playlists")) {
                 internalModeSwitch = false;
@@ -1175,18 +1183,18 @@ public class MainActivity extends AppCompatActivity {
 
     private String modeLabel(String mode) {
         if ("playlists".equals(mode)) {
-            return "歌单";
+            return getString(R.string.playlists);
         }
         if ("artists".equals(mode)) {
-            return "歌手";
+            return getString(R.string.artists);
         }
         if ("folders".equals(mode)) {
-            return "搜索";
+            return getString(R.string.search);
         }
         if ("search".equals(mode)) {
-            return "搜索";
+            return getString(R.string.search);
         }
-        return "歌曲";
+        return getString(R.string.songs);
     }
 
     private void syncPlayerSessionUi() {
@@ -1233,7 +1241,7 @@ public class MainActivity extends AppCompatActivity {
         if (isSongCaching && currentCaching != null) {
             miniPlayer.setVisibility(View.VISIBLE);
             textMiniTitle.setText(currentCaching.title);
-            textMiniSubtitle.setText("缓存中");
+            textMiniSubtitle.setText(getString(R.string.caching));
             if (!TextUtils.isEmpty(currentCaching.localCoverPath)) {
                 loadLocalCoverInto(new File(currentCaching.localCoverPath), imageMiniCover, false, R.drawable.ic_music_note);
             }
@@ -1244,12 +1252,12 @@ public class MainActivity extends AppCompatActivity {
                 currentCaching = new ApiClient.MediaItemModel();
                 currentCaching.title = PlaybackService.getCurrentTitle();
                 currentCaching.artist = PlaybackService.getCurrentArtist();
-                currentCaching.subtitle = firstNonEmpty(PlaybackService.getCurrentLyricLine(), PlaybackService.getCurrentArtist(), "缓存中");
+                currentCaching.subtitle = firstNonEmpty(PlaybackService.getCurrentLyricLine(), PlaybackService.getCurrentArtist(), getString(R.string.caching));
                 currentCaching.localCoverPath = PlaybackService.getCurrentCoverPath();
             }
             miniPlayer.setVisibility(View.VISIBLE);
             textMiniTitle.setText(currentCaching.title);
-            textMiniSubtitle.setText("缓存中 " + PlaybackService.getCurrentPercent() + "%");
+            textMiniSubtitle.setText(getString(R.string.caching) + " " + PlaybackService.getCurrentPercent() + "%");
             if (!TextUtils.isEmpty(currentCaching.localCoverPath)) {
                 loadLocalCoverInto(new File(currentCaching.localCoverPath), imageMiniCover, false, R.drawable.ic_music_note);
             }
@@ -1368,16 +1376,16 @@ public class MainActivity extends AppCompatActivity {
         if (buttonRefresh instanceof TextView) {
             TextView actionView = (TextView) buttonRefresh;
             if (searchMode && !selectedSearchSongs.isEmpty()) {
-                actionView.setText("添加到歌单");
+                actionView.setText(getString(R.string.add_to_playlist));
             } else {
-                actionView.setText("刷新");
+                actionView.setText(getString(R.string.refresh));
             }
         }
         if (buttonSelectAll != null) {
             List<ApiClient.MediaItemModel> searchSongs = searchSongItems();
             if (searchMode && !searchSongs.isEmpty()) {
                 buttonSelectAll.setVisibility(View.VISIBLE);
-                buttonSelectAll.setText(selectedSearchSongs.size() == searchSongs.size() ? "取消全选" : "全选");
+                buttonSelectAll.setText(selectedSearchSongs.size() == searchSongs.size() ? getString(R.string.deselect_all) : getString(R.string.select_all));
             } else {
                 buttonSelectAll.setVisibility(View.GONE);
             }
@@ -1454,7 +1462,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ArrayList<ApiClient.MediaItemModel> songs = collectPlayablePlaylistSongs(items);
                 if (songs.isEmpty()) {
-                    toast("歌单里没有可搜索歌曲");
+                    toast(getString(R.string.no_songs_to_search_in_playlist));
                     return;
                 }
                 showPlaylistSearchDialog(playlistTitle, songs);
@@ -1482,9 +1490,9 @@ public class MainActivity extends AppCompatActivity {
         TextView buttonExtra = view.findViewById(R.id.buttonPickerExtra);
         TextView buttonConfirm = view.findViewById(R.id.buttonPickerConfirm);
 
-        textTitle.setText("搜索《" + playlistTitle + "》");
-        textSubtitle.setText("在当前歌单内查找歌曲 · 共 " + songs.size() + " 首");
-        buttonCancel.setText("关闭");
+        textTitle.setText(getString(R.string.search) + "《" + playlistTitle + "》");
+        textSubtitle.setText(getString(R.string.search_in_playlist) + " · " + songs.size() + " " + getString(R.string.songs_count));
+        buttonCancel.setText(getString(R.string.close));
         buttonConfirm.setVisibility(View.GONE);
         buttonExtra.setVisibility(View.GONE);
         buttonSelectAll.setVisibility(View.GONE);
@@ -1494,7 +1502,7 @@ public class MainActivity extends AppCompatActivity {
             if (dialogHolder[0] != null) {
                 dialogHolder[0].dismiss();
             }
-            startPlaylistPlaybackFromSongs(songs, item, "已播放");
+            startPlaylistPlaybackFromSongs(songs, item, getString(R.string.played));
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setVerticalScrollBarEnabled(true);
@@ -1562,11 +1570,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ArrayList<ApiClient.MediaItemModel> songs = collectPlayablePlaylistSongs(items);
                 if (songs.isEmpty()) {
-                    toast("歌单里没有可播放歌曲");
+                    toast(getString(R.string.no_songs_to_play_in_playlist));
                     return;
                 }
                 int index = (int) (Math.random() * songs.size());
-                startPlaylistPlaybackFromSongs(songs, songs.get(index), "已随机播放");
+                startPlaylistPlaybackFromSongs(songs, songs.get(index), getString(R.string.randomly_played));
             }
 
             @Override
@@ -1897,10 +1905,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         PopupMenu menu = new PopupMenu(this, anchor);
-        menu.getMenu().add(0, 1, 0, "下一首播放");
-        menu.getMenu().add(0, 2, 1, "添加到正在播放列表");
+        menu.getMenu().add(0, 1, 0, getString(R.string.play_next));
+        menu.getMenu().add(0, 2, 1, getString(R.string.add_to_now_playing));
         if ("playlist".equals(currentParentType) && !TextUtils.isEmpty(currentParentId)) {
-            menu.getMenu().add(0, 3, 2, "从列表移除");
+            menu.getMenu().add(0, 3, 2, getString(R.string.remove_from_list));
         }
         menu.setOnMenuItemClickListener(menuItem -> {
             int action = menuItem.getItemId();
@@ -1926,27 +1934,27 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         String playlistName = currentPlaylistName();
-        String songName = firstNonEmpty(item.title, item.id, "歌曲");
+        String songName = firstNonEmpty(item.title, item.id, getString(R.string.song_default));
         apiClient.removeSongFromPlaylist(currentParentId, item.id, new ApiClient.StringCallback() {
             @Override
             public void onSuccess(String value) {
-                toast(songName + "从" + playlistName + "移除成功");
+                toast(getString(R.string.removed_from_playlist_success, songName, playlistName));
                 loadFirstPage(false);
             }
 
             @Override
             public void onError(String message) {
-                toast(songName + "从" + playlistName + "移除失败：" + message);
+                toast(getString(R.string.removed_from_playlist_failed, songName, playlistName, message));
             }
         });
     }
 
     private String currentPlaylistName() {
         if (textHeader == null) {
-            return "歌单";
+            return getString(R.string.playlist);
         }
         String value = String.valueOf(textHeader.getText());
-        return TextUtils.isEmpty(value) ? "歌单" : value;
+        return TextUtils.isEmpty(value) ? getString(R.string.playlist) : value;
     }
 
     private void enqueueSongIntoNowPlaying(ApiClient.MediaItemModel item, boolean nextPlay) {
@@ -1963,7 +1971,7 @@ public class MainActivity extends AppCompatActivity {
             playQueue.add(item);
             playQueueIndex = 0;
             playItem(item, playQueue);
-            toast("已添加到正在播放列表");
+            toast(getString(R.string.added_to_now_playing));
             return;
         }
 
@@ -2004,8 +2012,8 @@ public class MainActivity extends AppCompatActivity {
         syncQueueToService(currentPlaying == null ? null : currentPlaying.id);
 
         toast(nextPlay
-                ? "已设置下一首：" + item.title
-                : "已添加到正在播放列表：" + item.title);
+                ? getString(R.string.set_next_song, item.title)
+                : getString(R.string.added_to_now_playing_with_title, item.title));
     }
 
     private void beginCachingPlayback(ApiClient.MediaItemModel item) {
@@ -2185,7 +2193,7 @@ public class MainActivity extends AppCompatActivity {
         currentParentType = null;
         currentSortBy = defaultSortBy("playlists");
         currentSortDirection = "ASC";
-        textHeader.setText("歌单");
+        textHeader.setText(getString(R.string.playlist));
         saveHomeState();
         loadFirstPage(false);
         return true;
@@ -2198,7 +2206,7 @@ public class MainActivity extends AppCompatActivity {
         if (folderNavigationStack.isEmpty()) {
             currentParentId = null;
             currentParentType = null;
-            textHeader.setText("搜索");
+            textHeader.setText(getString(R.string.search));
             loadFirstPage(false);
             return true;
         }
@@ -2392,7 +2400,7 @@ public class MainActivity extends AppCompatActivity {
         if (textPlayerLyricLine == null) {
             return;
         }
-        if (TextUtils.isEmpty(line) || "暂无歌词".equals(line)) {
+        if (TextUtils.isEmpty(line) || getString(R.string.no_lyrics).equals(line)) {
             textPlayerLyricLine.setVisibility(View.GONE);
             return;
         }
@@ -2480,7 +2488,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentNotificationLine() {
         if (currentLyricIndex >= 0 && currentLyricIndex < lyricLines.size()) {
             String primary = lyricLines.get(currentLyricIndex).primary;
-            if (!TextUtils.isEmpty(primary) && !"暂无歌词".equals(primary)) {
+            if (!TextUtils.isEmpty(primary) && !getString(R.string.no_lyrics).equals(primary)) {
                 return primary;
             }
         }
@@ -2658,7 +2666,7 @@ public class MainActivity extends AppCompatActivity {
         miniPlayer.setVisibility(View.VISIBLE);
         textMiniTitle.setText(currentPlaying.title);
         textMiniSubtitle.setText(currentPlaying.subtitle);
-        textPlayerAlbum.setText(firstNonEmpty(currentPlaying.title, currentPlaying.album, "单曲"));
+        textPlayerAlbum.setText(firstNonEmpty(currentPlaying.title, currentPlaying.album, getString(R.string.single_track)));
         textPlayerTitle.setText(currentPlaying.title);
         textPlayerArtist.setText(currentPlaying.subtitle);
         updatePlayerQualityLabel();
@@ -2762,7 +2770,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showCachingProgress(int percent) {
         isSongCaching = true;
-        String progressText = percent >= 100 ? "缓存完成，准备播放" : "缓存中 " + percent + "%";
+        String progressText = percent >= 100 ? getString(R.string.cache_complete_ready_to_play) : getString(R.string.caching_percent, percent);
         if (currentPlaying != null) {
             textMiniSubtitle.setText(progressText);
             textPlayerArtist.setText(progressText);
@@ -2906,7 +2914,7 @@ public class MainActivity extends AppCompatActivity {
             progressMini.setProgress(1000);
         }
         PlaybackService.clearCachingState(this);
-        toast("闁诲氦顫夐悺鏇犱焊濞嗘垶顫曢柨鏃堟暜閸?" + item.title);
+        toast(getString(R.string.added_to_now_playing_with_title, item.title));
     }
 
     private void loadCoverInto(String type, String id, ImageView imageView) {
@@ -3045,7 +3053,7 @@ public class MainActivity extends AppCompatActivity {
         player.setShuffleModeEnabled(shuffleEnabled);
         updatePlaybackModeUi();
         syncQueueToService(currentPlaying == null ? null : currentPlaying.id);
-        toast(shuffleEnabled ? "已开启随机播放" : "已关闭随机播放");
+        toast(shuffleEnabled ? getString(R.string.shuffle_on) : getString(R.string.shuffle_off));
     }
 
     private void toggleRepeatMode() {
@@ -3056,7 +3064,7 @@ public class MainActivity extends AppCompatActivity {
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         updatePlaybackModeUi();
         syncQueueToService(currentPlaying == null ? null : currentPlaying.id);
-        toast(repeatAllEnabled ? "已开启列表循环" : "已关闭列表循环");
+        toast(repeatAllEnabled ? getString(R.string.repeat_all_on) : getString(R.string.repeat_all_off));
     }
 
     private void toggleRepeatOneMode() {
@@ -3067,7 +3075,7 @@ public class MainActivity extends AppCompatActivity {
         player.setRepeatMode(Player.REPEAT_MODE_OFF);
         updatePlaybackModeUi();
         syncQueueToService(currentPlaying == null ? null : currentPlaying.id);
-        toast(repeatOneEnabled ? "已开启单曲循环" : "已关闭单曲循环");
+        toast(repeatOneEnabled ? getString(R.string.repeat_one_on) : getString(R.string.repeat_one_off));
     }
 
     private void updatePlaybackModeUi() {
@@ -3111,7 +3119,7 @@ public class MainActivity extends AppCompatActivity {
     private void togglePlayPause() {
         if (isSongCaching) {
             stopAllPendingPlayback();
-            toast("已停止缓存和待播");
+            toast(getString(R.string.stopped_caching_and_queue));
             return;
         }
         if (currentPlaying == null) {
@@ -3168,7 +3176,7 @@ public class MainActivity extends AppCompatActivity {
                 expandPlayQueueAndThen(() -> continueQueuePlayback(true));
                 return;
             }
-            toast(forward ? "已经是最后一首" : "已经是第一首");
+            toast(forward ? getString(R.string.already_last_song) : getString(R.string.already_first_song));
             return;
         }
         playQueueIndex = nextIndex;
@@ -3295,7 +3303,7 @@ public class MainActivity extends AppCompatActivity {
             playQueueComplete = !hasMore;
             Runnable notifyReady = () -> {
                 if (!playQueue.isEmpty()) {
-                    toast("已将" + currentQueueSourceLabel() + "中的" + playQueue.size() + "首歌添加到正在播放列表");
+                    toast(getString(R.string.added_to_now_playing_list_with_count, currentQueueSourceLabel(), playQueue.size()));
                 }
             };
             if (canExpandPlayQueue()) {
@@ -3325,21 +3333,21 @@ public class MainActivity extends AppCompatActivity {
             return "《" + header + "》" ;
         }
         if ("playlists".equals(currentMode)) {
-            return "歌单";
+            return getString(R.string.playlist);
         }
         if ("artists".equals(currentMode)) {
-            return "歌手";
+            return getString(R.string.artists);
         }
         if ("songs".equals(currentMode)) {
-            return "所有音乐";
+            return getString(R.string.all_music);
         }
         if ("search".equals(currentMode) && !TextUtils.isEmpty(currentKeyword)) {
-            return "搜索结果";
+            return getString(R.string.search_results);
         }
         if ("search".equals(currentMode)) {
-            return "当前文件夹";
+            return getString(R.string.current_folder);
         }
-        return "当前列表";
+        return getString(R.string.current_list);
     }
 
     private int findQueueIndexById(String songId) {
@@ -3424,7 +3432,7 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
                         playQueueLoading = false;
-                        toast("扩展播放队列失败：" + message);
+                        toast(getString(R.string.extend_queue_failed, message));
                         if (onComplete != null) {
                             onComplete.run();
                         }
@@ -3448,7 +3456,7 @@ public class MainActivity extends AppCompatActivity {
     private void showNowPlayingQueueDialog() {
         ensurePlayableQueue();
         if (playQueue.isEmpty()) {
-            toast("暂无正在播放的队列");
+            toast(getString(R.string.no_playing_queue));
             return;
         }
 
@@ -3524,7 +3532,7 @@ public class MainActivity extends AppCompatActivity {
         updateQueueSubtitle(textSubtitle);
         buttonAddToPlaylist.setOnClickListener(v -> {
             if (playQueue.isEmpty()) {
-                toast("队列为空");
+                toast(getString(R.string.queue_empty));
                 return;
             }
             dialog.dismiss();
@@ -3602,9 +3610,9 @@ public class MainActivity extends AppCompatActivity {
         }
         ApiClient.MediaItemModel song = playQueue.get(position);
         PopupMenu menu = new PopupMenu(this, anchor);
-        menu.getMenu().add(0, 1, 0, "插放下一首");
-        menu.getMenu().add(0, 2, 1, "添加到歌单");
-        menu.getMenu().add(0, 3, 2, "从队列移除");
+        menu.getMenu().add(0, 1, 0, getString(R.string.play_next));
+        menu.getMenu().add(0, 2, 1, getString(R.string.add_to_playlist));
+        menu.getMenu().add(0, 3, 2, getString(R.string.remove_from_queue));
         menu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if (id == 1) {
@@ -3692,7 +3700,7 @@ public class MainActivity extends AppCompatActivity {
         if (playQueue.isEmpty()) {
             pendingForceNextSongId = null;
             stopAllPendingPlayback();
-            toast("播放队列已清空");
+            toast(getString(R.string.queue_cleared));
             return;
         }
         boolean removedCurrent = currentPlaying != null && TextUtils.equals(currentPlaying.id, removed.id);
@@ -3748,12 +3756,12 @@ public class MainActivity extends AppCompatActivity {
                 current = fromId + 1;
             }
         }
-        textSubtitle.setText("共 " + total + " 首 · 当前第 " + Math.max(current, 1) + " 首");
+        textSubtitle.setText(getString(R.string.queue_info, total, Math.max(current, 1)));
     }
 
     private void saveQueueAsNewPlaylist() {
         if (playQueue.isEmpty()) {
-            toast("队列为空");
+            toast(getString(R.string.queue_empty));
             return;
         }
         View inputView = LayoutInflater.from(this).inflate(R.layout.dialog_text_input, null, false);
@@ -3763,11 +3771,11 @@ public class MainActivity extends AppCompatActivity {
         TextView buttonCancel = inputView.findViewById(R.id.buttonInputCancel);
         TextView buttonConfirm = inputView.findViewById(R.id.buttonInputConfirm);
 
-        textTitle.setText("保存正在播放列表");
-        textSubtitle.setText("将当前队列保存为新歌单");
-        editName.setText("我的正在播放队列");
+        textTitle.setText(getString(R.string.save_now_playing_list));
+        textSubtitle.setText(getString(R.string.save_current_queue_as_new_playlist));
+        editName.setText(getString(R.string.my_now_playing_queue));
         editName.setSelection(editName.getText() == null ? 0 : editName.getText().length());
-        buttonConfirm.setText("保存");
+        buttonConfirm.setText(getString(R.string.save));
 
         AlertDialog dialog = new AlertDialog.Builder(this).setView(inputView).create();
         if (dialog.getWindow() != null) {
@@ -3778,12 +3786,12 @@ public class MainActivity extends AppCompatActivity {
         buttonConfirm.setOnClickListener(v -> {
             String name = editName.getText() == null ? "" : editName.getText().toString().trim();
             if (TextUtils.isEmpty(name)) {
-                toast("歌单名称不能为空");
+                toast(getString(R.string.name_cannot_be_empty));
                 return;
             }
             ArrayList<String> songIds = collectQueueSongIds();
             if (songIds.isEmpty()) {
-                toast("队列中没有可保存歌曲");
+                toast(getString(R.string.no_songs_to_save_in_queue));
                 return;
             }
             apiClient.createPlaylist(name, new ApiClient.StringCallback() {
@@ -3792,7 +3800,7 @@ public class MainActivity extends AppCompatActivity {
                     apiClient.addSongsToPlaylist(playlistId, songIds, new ApiClient.StringCallback() {
                         @Override
                         public void onSuccess(String value) {
-                            toast("已保存为新歌单");
+                            toast(getString(R.string.saved_as_new_playlist));
                         }
 
                         @Override
@@ -3864,7 +3872,7 @@ public class MainActivity extends AppCompatActivity {
     private void showOfflineCacheDialog() {
         List<ApiClient.MediaItemModel> cached = collectCachedSongs();
         if (cached.isEmpty()) {
-            toast("暂无已缓存的音乐");
+            toast(getString(R.string.no_cached_music));
             return;
         }
         String[] entries = new String[cached.size()];
@@ -3872,9 +3880,9 @@ public class MainActivity extends AppCompatActivity {
             entries[i] = cached.get(i).title + " \u00B7 " + cached.get(i).artist;
         }
         new AlertDialog.Builder(this)
-                .setTitle("离线已缓存音乐")
+                .setTitle(getString(R.string.offline_cached_music))
                 .setItems(entries, (dialog, which) -> playItem(cached.get(which), cached))
-                .setNegativeButton("取消", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 
@@ -3904,10 +3912,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void showSortMenu(View anchor) {
         PopupMenu menu = new PopupMenu(this, anchor);
-        menu.getMenu().add(0, 1, 0, "默认排序 A-Z");
-        menu.getMenu().add(0, 2, 1, "默认排序 Z-A");
-        menu.getMenu().add(0, 3, 2, "歌手优先 A-Z");
-        menu.getMenu().add(0, 4, 3, "专辑优先 A-Z");
+        menu.getMenu().add(0, 1, 0, getString(R.string.default_sort_a_z));
+        menu.getMenu().add(0, 2, 1, getString(R.string.default_sort_z_a));
+        menu.getMenu().add(0, 3, 2, getString(R.string.artist_first_a_z));
+        menu.getMenu().add(0, 4, 3, getString(R.string.album_first_a_z));
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case 1:
@@ -3952,11 +3960,11 @@ public class MainActivity extends AppCompatActivity {
         return currentMode;
     }
 
-    private void addTab(String mode, String label) {
+    private void addTab(String mode, int iconRes, String label) {
         TabLayout.Tab tab = tabLayout.newTab();
         View custom = LayoutInflater.from(this).inflate(R.layout.item_tab_chip, tabLayout, false);
-        TextView text = custom.findViewById(R.id.textTab);
-        text.setText(label);
+        ImageView icon = custom.findViewById(R.id.iconTab);
+        icon.setImageResource(iconRes);
         tab.setCustomView(custom);
         tab.setText(label);
         tab.setTag(mode);
@@ -4026,18 +4034,18 @@ public class MainActivity extends AppCompatActivity {
 
     private String typeLabel(ApiClient.MediaItemModel item) {
         if ("artist".equals(item.type)) {
-            return "歌手";
+            return getString(R.string.artists);
         }
         if ("album".equals(item.type)) {
-            return "专辑";
+            return getString(R.string.album);
         }
         if ("playlist".equals(item.type)) {
-            return "歌单";
+            return getString(R.string.playlist);
         }
         if ("folder".equals(item.type)) {
-            return "文件夹";
+            return getString(R.string.folder);
         }
-        return "歌曲";
+        return getString(R.string.song_default);
     }
 
     private String metaSuffix(ApiClient.MediaItemModel item) {

@@ -200,7 +200,7 @@ public class CacheManagerActivity extends AppCompatActivity {
         boolean daysEnabled = checkRuleDays != null && checkRuleDays.isChecked();
         boolean sizeEnabled = checkRuleSize != null && checkRuleSize.isChecked();
         if (!daysEnabled && !sizeEnabled) {
-            Toast.makeText(this, "请先选择清理规则", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.please_select_cleanup_rule_first), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -213,21 +213,21 @@ public class CacheManagerActivity extends AppCompatActivity {
         }
         long sizeBytes = apiClient.getResourceCacheSizeBytes();
         String sizeLabel = String.format(Locale.getDefault(), "%.1fMB", sizeBytes / 1024f / 1024f);
-        Toast.makeText(this, "已清理 " + deleted + " 个内部缓存，当前 " + sizeLabel, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.cleaned_count_cache, deleted, sizeLabel), Toast.LENGTH_SHORT).show();
     }
 
     private void showCustomCleanDialog() {
         final boolean[] selected = new boolean[]{true, true, true};
-        final CharSequence[] items = new CharSequence[]{"封面缓存", "歌词缓存", "其他缓存"};
+        final CharSequence[] items = new CharSequence[]{getString(R.string.cover_cache), getString(R.string.lyrics_cache), getString(R.string.other_cache)};
         new AlertDialog.Builder(this)
-                .setTitle("自定义清理")
+                .setTitle(getString(R.string.custom_cleanup))
                 .setMultiChoiceItems(items, selected, (dialog, which, isChecked) -> selected[which] = isChecked)
-                .setMessage("默认只清理内部缓存，不会动已下载歌曲。")
-                .setPositiveButton("清理", (dialog, which) -> {
+                .setMessage(getString(R.string.cleanup_description))
+                .setPositiveButton(getString(R.string.clean), (dialog, which) -> {
                     int deleted = apiClient.clearSelectedResourceCache(selected[0], selected[1], selected[2]);
-                    Toast.makeText(this, "已清理 " + deleted + " 个内部缓存", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.cleaned_count_only, deleted), Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 
@@ -238,7 +238,7 @@ public class CacheManagerActivity extends AppCompatActivity {
         ApiClient.ResourceCacheStats stats = apiClient.getResourceCacheStats();
         textCacheSummary.setText(String.format(
                 Locale.getDefault(),
-                "当前内部缓存 %d 类 · %d 项 · %s\n封面 %s · 歌词 %s · 其他 %s",
+                getString(R.string.current_cache_info),
                 stats.typeCount(),
                 stats.totalCount,
                 formatSize(stats.totalBytes),

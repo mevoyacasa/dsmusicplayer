@@ -32,10 +32,20 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView buttonLyricOffset;
     private TextView buttonAudioExclusive;
     private TextView buttonAudioShared;
+    private TextView buttonLanguageChinese;
+    private TextView buttonLanguageEnglish;
     private ActivityResultLauncher<Intent> pickCacheLocationLauncher;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        // 设置应用语言
+        String language = new ApiClient(this).getAppLanguage();
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+        android.content.res.Configuration config = new android.content.res.Configuration();
+        config.locale = locale;
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
@@ -50,6 +60,8 @@ public class SettingsActivity extends AppCompatActivity {
         TextView buttonCacheManager = findViewById(R.id.buttonCacheManager);
         buttonAudioExclusive = findViewById(R.id.buttonAudioExclusive);
         buttonAudioShared = findViewById(R.id.buttonAudioShared);
+        buttonLanguageChinese = findViewById(R.id.buttonLanguageChinese);
+        buttonLanguageEnglish = findViewById(R.id.buttonLanguageEnglish);
 
         pickCacheLocationLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -64,10 +76,13 @@ public class SettingsActivity extends AppCompatActivity {
         buttonCacheManager.setOnClickListener(v -> startActivity(new Intent(this, CacheManagerActivity.class)));
         buttonAudioExclusive.setOnClickListener(v -> setConcurrentPlayback(false));
         buttonAudioShared.setOnClickListener(v -> setConcurrentPlayback(true));
+        buttonLanguageChinese.setOnClickListener(v -> setLanguage("zh"));
+        buttonLanguageEnglish.setOnClickListener(v -> setLanguage("en"));
 
         refreshCacheLocationButton();
         refreshLyricOffsetButton();
         refreshAudioButtons();
+        refreshLanguageButtons();
     }
 
     @Override
@@ -76,6 +91,35 @@ public class SettingsActivity extends AppCompatActivity {
         refreshCacheLocationButton();
         refreshLyricOffsetButton();
         refreshAudioButtons();
+        refreshLanguageButtons();
+    }
+
+    private void setLanguage(String language) {
+        apiClient.setAppLanguage(language);
+        refreshLanguageButtons();
+        toast(language.equals("zh") ? getString(R.string.switched_to_chinese) : getString(R.string.switched_to_english));
+        restartApp();
+    }
+
+    private void refreshLanguageButtons() {
+        String currentLanguage = apiClient.getAppLanguage();
+        applyLanguageButton(buttonLanguageChinese, "zh".equals(currentLanguage));
+        applyLanguageButton(buttonLanguageEnglish, "en".equals(currentLanguage));
+    }
+
+    private void applyLanguageButton(@Nullable TextView button, boolean active) {
+        if (button == null) {
+            return;
+        }
+        button.setBackgroundResource(active ? R.drawable.bg_tab_selected_pill : R.drawable.bg_chip_soft);
+        button.setTextColor(getColor(active ? R.color.white : R.color.subtle));
+    }
+
+    private void restartApp() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void refreshLyricOffsetButton() {
@@ -95,10 +139,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     private String formatLyricOffsetLabel(long offsetMs) {
         if (offsetMs == 0L) {
-            return "标准";
+            return getString(R.string.standard);
         }
         String value = String.format(Locale.getDefault(), "%.1f", Math.abs(offsetMs) / 1000f);
-        return offsetMs > 0L ? "提前 " + value + "s" : "延后 " + value + "s";
+        return offsetMs > 0L ? getString(R.string.advance) + " " + value + "s" : getString(R.string.delay) + " " + value + "s";
     }
 
     private void refreshCacheLocationButton() {
@@ -110,7 +154,7 @@ public class SettingsActivity extends AppCompatActivity {
             buttonPickCacheLocation.setBackgroundResource(R.drawable.bg_tab_selected_pill);
             buttonPickCacheLocation.setTextColor(getColor(R.color.white));
         } else {
-            buttonPickCacheLocation.setText("内部");
+            buttonPickCacheLocation.setText(getString(R.string.internal));
             buttonPickCacheLocation.setBackgroundResource(R.drawable.bg_chip_soft);
             buttonPickCacheLocation.setTextColor(getColor(R.color.subtle));
         }
@@ -134,17 +178,17 @@ public class SettingsActivity extends AppCompatActivity {
         apiClient.setConcurrentPlaybackAllowed(allowShared);
         PlaybackService.updateAudioFocusPolicy(this);
         refreshAudioButtons();
-        toast(allowShared ? "已切换为共享播放" : "已切换为独占播放");
+        toast(allowShared ? getString(R.string.switched_to_shared_playback) : getString(R.string.switched_to_exclusive_playback));
     }
 
     private void showLyricOffsetDialog() {
         final long[] values = new long[]{-500L, -300L, 0L, 300L, 500L};
         final String[] labels = new String[]{
-                "延后 0.5s",
-                "延后 0.3s",
-                "标准",
-                "提前 0.3s",
-                "提前 0.5s"
+                getString(R.string.delay_0_5s),
+                getString(R.string.delay_0_3s),
+                getString(R.string.standard),
+                getString(R.string.advance_0_3s),
+                getString(R.string.advance_0_5s)
         };
         long current = apiClient.getLyricOffsetMs();
         int checked = 2;
@@ -155,15 +199,15 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
         new AlertDialog.Builder(this)
-                .setTitle("歌词偏移")
+                .setTitle(getString(R.string.lyric_offset_dialog_title))
                 .setSingleChoiceItems(labels, checked, (dialog, which) -> {
                     long offset = values[which];
                     apiClient.setLyricOffsetMs(offset);
                     refreshLyricOffsetButton();
-                    toast(offset == 0L ? "歌词保持标准" : "歌词已" + formatLyricOffsetLabel(offset));
+                    toast(offset == 0L ? getString(R.string.lyric_kept_standard) : getString(R.string.lyrics_have_been) + formatLyricOffsetLabel(offset));
                     dialog.dismiss();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton(getString(R.string.button_cancel), null)
                 .show();
     }
 
@@ -191,14 +235,14 @@ public class SettingsActivity extends AppCompatActivity {
         }
         apiClient.setSongCacheTreeUri(treeUri);
         refreshCacheLocationButton();
-        toast("已设置本地缓存目录");
+        toast(getString(R.string.cache_directory_set));
     }
 
     private void showAccountSwitchDialog() {
         List<ApiClient.AccountProfile> profiles = apiClient.readAccountProfiles();
         if (profiles.isEmpty()) {
             startActivity(new Intent(this, LoginActivity.class));
-            toast("暂无已保存账号，请先登录");
+            toast(getString(R.string.no_saved_accounts));
             return;
         }
 
@@ -209,7 +253,7 @@ public class SettingsActivity extends AppCompatActivity {
         TextView buttonAdd = view.findViewById(R.id.buttonAccountSwitchAdd);
         TextView buttonClose = view.findViewById(R.id.buttonAccountSwitchClose);
 
-        subtitle.setText("选择一个已保存账号快速切换");
+        subtitle.setText(getString(R.string.select_account_to_switch_quickly));
         buttonAdd.setVisibility(View.GONE);
 
         AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
@@ -241,12 +285,12 @@ public class SettingsActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
-        toast("已退出登录");
+        toast(getString(R.string.logout_successful));
     }
 
     private void switchAccountProfile(ApiClient.AccountProfile profile) {
         if (profile == null || TextUtils.isEmpty(profile.account) || TextUtils.isEmpty(profile.host)) {
-            toast("账号信息不完整");
+            toast(getString(R.string.account_info_incomplete));
             return;
         }
         String normalizedHost = apiClient.normalizeHost(profile.host, profile.forceHttps);
@@ -261,11 +305,11 @@ public class SettingsActivity extends AppCompatActivity {
 
         PlaybackService.stopSession(this);
         apiClient.cancelSongCache();
-        toast("正在切换账号：" + profile.account);
+        toast(getString(R.string.switching_account) + profile.account);
         apiClient.login(normalizedHost, profile.account, profile.password == null ? "" : profile.password, profile.forceHttps, profile.ignoreCert, new ApiClient.JsonCallback() {
             @Override
             public void onSuccess(org.json.JSONObject json) {
-                toast("已切换到：" + profile.account);
+                toast(getString(R.string.switched_to) + profile.account);
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -310,9 +354,9 @@ public class SettingsActivity extends AppCompatActivity {
             StringBuilder meta = new StringBuilder();
             meta.append(profile.forceHttps ? "HTTPS" : "HTTP");
             meta.append(" · ");
-            meta.append(profile.ignoreCert ? "忽略证书" : "验证证书");
+            meta.append(profile.ignoreCert ? getString(R.string.ignore_certificate) : getString(R.string.verify_certificate));
             if (!TextUtils.isEmpty(profile.password)) {
-                meta.append(" · 已记住密码");
+                meta.append(" · " + getString(R.string.remember_password));
             }
             holder.textMeta.setText(meta.toString());
             holder.imageCurrent.setVisibility(View.GONE);

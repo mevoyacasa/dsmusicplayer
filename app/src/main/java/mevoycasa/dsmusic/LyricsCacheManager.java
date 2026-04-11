@@ -154,7 +154,7 @@ public class LyricsCacheManager {
     
     public void fetchLyrics(String songId, ApiClient apiClient, LyricsCallback callback) {
         if (songId == null || songId.isEmpty()) {
-            callback.onError("无效的歌曲ID");
+            callback.onError(context.getString(R.string.invalid_song_id));
             return;
         }
         
@@ -177,7 +177,7 @@ public class LyricsCacheManager {
             } else if (cached != null && cached.hasError) {
                 callback.onError(cached.errorMessage);
             } else {
-                callback.onError("网络不可用，请稍后重试");
+                callback.onError(context.getString(R.string.network_unavailable_retry_later));
             }
             return;
         }

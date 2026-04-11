@@ -20,7 +20,7 @@
             android:id="@+id/textQueueTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="正在播放列表"
+            android:text="@string/now_playing_list"
             android:textColor="@color/ink"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -63,7 +63,7 @@
                 android:paddingTop="10dp"
                 android:paddingRight="14dp"
                 android:paddingBottom="10dp"
-                android:text="添加到歌单"
+                android:text="@string/add_to_playlist"
                 android:textColor="@color/seed"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -78,7 +78,7 @@
                 android:paddingTop="10dp"
                 android:paddingRight="14dp"
                 android:paddingBottom="10dp"
-                android:text="存为新歌单"
+                android:text="@string/save_as_new_playlist"
                 android:textColor="@color/seed"
                 android:textSize="13sp"
                 android:textStyle="bold" />

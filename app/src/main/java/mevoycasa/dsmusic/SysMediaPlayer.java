@@ -179,10 +179,10 @@ public class SysMediaPlayer {
         }
         NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID,
-                "系统媒体控制",
+                context.getString(R.string.system_media_control),
                 NotificationManager.IMPORTANCE_LOW
         );
-        channel.setDescription("系统媒体播放控制");
+        channel.setDescription(context.getString(R.string.system_media_playback_control));
         channel.setShowBadge(false);
         channel.setSound(null, null);
         if (notificationManager != null) {
@@ -380,15 +380,15 @@ public class SysMediaPlayer {
                         .setShowActionsInCompactView(0, 1, 2))
                 .addAction(new NotificationCompat.Action(
                         android.R.drawable.ic_media_previous,
-                        "上一首",
+                        context.getString(R.string.previous_track),
                         actionPreviousIntent))
                 .addAction(new NotificationCompat.Action(
                         isPlaying ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play,
-                        isPlaying ? "暂停" : "播放",
+                        isPlaying ? context.getString(R.string.pause) : context.getString(R.string.play),
                         actionPlayPauseIntent))
                 .addAction(new NotificationCompat.Action(
                         android.R.drawable.ic_media_next,
-                        "下一首",
+                        context.getString(R.string.next_track),
                         actionNextIntent));
         
         Bitmap cover = decodeCover();
@@ -409,7 +409,7 @@ public class SysMediaPlayer {
         String cleanTitle = title == null ? "" : title.trim();
         String cleanArtist = artist == null ? "" : artist.trim();
         if (cleanTitle.isEmpty()) {
-            return cleanArtist.isEmpty() ? "正在播放" : cleanArtist;
+            return cleanArtist.isEmpty() ? context.getString(R.string.now_playing) : cleanArtist;
         }
         if (cleanArtist.isEmpty() || cleanTitle.contains(cleanArtist)) {
             return cleanTitle;
